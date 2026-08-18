@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard Portal Cuti') - STIKes Panti Waluya Malang</title>
+    <title>@yield('title', 'Dashboard Portal') - REHAT-PW STIKes Panti Waluya Malang</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -25,15 +25,16 @@
     <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50 border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <!-- Brand / Title -->
+                <!-- Brand / Logo -->
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-sm">
-                            PW
-                        </div>
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo STIKes Panti Waluya" class="h-10 w-auto object-contain drop-shadow">
                         <div>
-                            <span class="font-bold text-lg text-white">Portal Cuti Internal</span>
-                            <span class="text-xs hidden sm:inline-block text-blue-300 ml-2 px-2 py-0.5 bg-blue-900/60 rounded-full border border-blue-700/50">STIKes Panti Waluya</span>
+                            <div class="flex items-center gap-2">
+                                <span class="font-black text-xl tracking-tight text-white">REHAT-PW</span>
+                                <span class="text-[10px] uppercase font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">Portal Cuti</span>
+                            </div>
+                            <span class="text-xs text-blue-300 font-medium">STIKes Panti Waluya Malang</span>
                         </div>
                     </a>
                 </div>
@@ -47,7 +48,7 @@
                             @if(Auth::user()->isKadiv())
                                 Kepala Divisi {{ Auth::user()->divisi ? '(' . Auth::user()->divisi->nama_divisi . ')' : '' }}
                             @elseif(Auth::user()->isHrd())
-                                Tim HRD & Kepegawaian
+                                Tim HRD & Kepegawaian (Admin)
                             @elseif(Auth::user()->isKetua())
                                 Ketua STIKes
                             @else
@@ -73,13 +74,34 @@
     <div class="bg-white border-b border-slate-200 shadow-sm sticky top-16 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav class="flex items-center gap-1 py-2 overflow-x-auto">
+                <!-- Dashboard (Tahun Berjalan) -->
                 <a href="{{ route('dashboard') }}" 
                    class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 {{ request()->routeIs('dashboard') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                     <i data-lucide="layout-dashboard" class="w-4 h-4 text-blue-600"></i>
-                    <span>Dashboard & Approval</span>
+                    <span>Dashboard (Tahun Berjalan)</span>
                 </a>
 
+                <!-- Arsip Cuti Tahunan (Per Tahun) -->
+                <a href="{{ route('arsip.index') }}" 
+                   class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 {{ request()->routeIs('arsip.*') ? 'bg-amber-50 text-amber-800 font-bold border border-amber-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                    <i data-lucide="archive" class="w-4 h-4 text-amber-600"></i>
+                    <span>Arsip Cuti Tahunan</span>
+                </a>
+
+                {{-- FITUR KHUSUS AKUN HRD --}}
                 @if(Auth::user()->isHrd())
+                    <a href="{{ route('reports.index') }}" 
+                       class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 {{ request()->routeIs('reports.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i>
+                        <span>Laporan &amp; Export Cuti</span>
+                    </a>
+
+                    <a href="{{ route('users.index') }}" 
+                       class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 {{ request()->routeIs('users.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
+                        <span>Kelola User (Login)</span>
+                    </a>
+
                     <a href="{{ route('pegawai.index') }}" 
                        class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 {{ request()->routeIs('pegawai.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                         <i data-lucide="users" class="w-4 h-4 text-indigo-600"></i>
@@ -95,7 +117,7 @@
 
                 <a href="{{ route('public.pengajuan') }}" target="_blank"
                    class="ml-auto px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 flex items-center gap-1 rounded hover:bg-slate-50">
-                    <span>Lihat Halaman Publik</span>
+                    <span>Lihat Form Publik</span>
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                 </a>
             </nav>
@@ -130,8 +152,13 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
-            Sistem Informasi Cuti Pegawai &bull; STIKes Panti Waluya Malang &copy; {{ date('Y') }}
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between text-xs text-slate-500">
+            <div class="flex items-center gap-2">
+                <img src="{{ asset('images/logo.png') }}" class="h-5 w-auto" alt="Logo">
+                <span class="font-bold text-slate-700">REHAT-PW</span>
+                <span>&bull; STIKes Panti Waluya Malang</span>
+            </div>
+            <div>Sistem Informasi Cuti Pegawai &copy; {{ date('Y') }}</div>
         </div>
     </footer>
 

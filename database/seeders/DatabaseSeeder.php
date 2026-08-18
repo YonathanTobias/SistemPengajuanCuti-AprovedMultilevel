@@ -6,162 +6,167 @@ use App\Models\Cuti;
 use App\Models\Divisi;
 use App\Models\Pegawai;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Create Divisi / Prodi
-        $divKpr = Divisi::create([
-            'kode_divisi' => 'PRODI-S1KPR',
-            'nama_divisi' => 'Prodi S1 Keperawatan',
-            'deskripsi' => 'Program Studi Sarjana Keperawatan STIKes Panti Waluya Malang',
-        ]);
-
-        $divRm = Divisi::create([
-            'kode_divisi' => 'PRODI-D3RM',
-            'nama_divisi' => 'Prodi D3 Rekam Medis',
-            'deskripsi' => 'Program Studi D3 Rekam Medis & Informasi Kesehatan',
-        ]);
-
-        $divKeu = Divisi::create([
-            'kode_divisi' => 'DIV-KEU',
-            'nama_divisi' => 'Divisi Keuangan',
-            'deskripsi' => 'Bagian Keuangan dan Administrasi Keuangan',
-        ]);
-
-        $divHrd = Divisi::create([
+        // 1. Create Default Administrative Users
+        $hrdDivisi = Divisi::firstOrCreate([
             'kode_divisi' => 'DIV-HRD',
+        ], [
             'nama_divisi' => 'Divisi HRD & Kepegawaian',
-            'deskripsi' => 'Bagian Sumber Daya Manusia & Kepegawaian',
+            'deskripsi' => 'Bagian SDM & Kepegawaian STIKes Panti Waluya Malang',
         ]);
 
-        // 2. Create Positional / Generic User Accounts (Tanpa Nama Perorangan)
-        // HRD Account
-        User::create([
+        User::firstOrCreate(['email' => 'hrd@stikespantiwaluya.ac.id'], [
             'name' => 'Tim HRD & Kepegawaian',
-            'email' => 'hrd@stikespantiwaluya.ac.id',
             'password' => Hash::make('password123'),
             'role' => 'hrd',
-            'divisi_id' => $divHrd->id,
+            'divisi_id' => $hrdDivisi->id,
         ]);
 
-        // Ketua STIKes Account
-        User::create([
+        User::firstOrCreate(['email' => 'ketua@stikespantiwaluya.ac.id'], [
             'name' => 'Ketua STIKes Panti Waluya',
-            'email' => 'ketua@stikespantiwaluya.ac.id',
             'password' => Hash::make('password123'),
             'role' => 'ketua',
             'divisi_id' => null,
         ]);
 
-        // Kepala Divisi Accounts (Generik Jabatan)
-        User::create([
-            'name' => 'Kepala Prodi S1 Keperawatan',
-            'email' => 'kadiv.keperawatan@stikespantiwaluya.ac.id',
-            'password' => Hash::make('password123'),
-            'role' => 'kadiv',
-            'divisi_id' => $divKpr->id,
-        ]);
+        // 2. Read and Parse data_cuti.csv
+        $csvFile = __DIR__ . '/data_cuti.csv';
+        if (!file_exists($csvFile)) {
+            return;
+        }
 
-        User::create([
-            'name' => 'Kepala Prodi D3 Rekam Medis',
-            'email' => 'kadiv.rekammedis@stikespantiwaluya.ac.id',
-            'password' => Hash::make('password123'),
-            'role' => 'kadiv',
-            'divisi_id' => $divRm->id,
-        ]);
+        $file = fopen($csvFile, 'r');
+        $header = fgetcsv($file, 1000, ';'); // Skip header row
 
-        User::create([
-            'name' => 'Kepala Divisi Keuangan',
-            'email' => 'kadiv.keuangan@stikespantiwaluya.ac.id',
-            'password' => Hash::make('password123'),
-            'role' => 'kadiv',
-            'divisi_id' => $divKeu->id,
-        ]);
+        $divisiCache = [];
+        $pegawaiCache = [];
+        $cutiCountPerPegawai = [];
 
-        // 3. Create Sample Pegawai
-        $p1 = Pegawai::create([
-            'nip' => '202401001',
-            'nama' => 'Ahmad Fauzi, S.Kep., Ns.',
-            'divisi_id' => $divKpr->id,
-            'jabatan' => 'Dosen S1 Keperawatan',
-            'email' => 'ahmad.fauzi@stikespantiwaluya.ac.id',
-            'no_hp' => '081234567890',
-            'jatah_cuti' => 12,
-            'sisa_cuti' => 10,
-        ]);
+        while (($row = fgetcsv($file, 1000, ';')) !== false) {
+            if (count($row) < 5) {
+                continue;
+            }
 
-        $p2 = Pegawai::create([
-            'nip' => '202401002',
-            'nama' => 'Siti Nurhaliza, A.Md.RMIK',
-            'divisi_id' => $divRm->id,
-            'jabatan' => 'Staff Laboratorium Rekam Medis',
-            'email' => 'siti.nurhaliza@stikespantiwaluya.ac.id',
-            'no_hp' => '082345678901',
-            'jatah_cuti' => 12,
-            'sisa_cuti' => 12,
-        ]);
+            $no = trim($row[0]);
+            $nip = trim($row[1]);
+            $nama = trim($row[2]);
+            $namaDivisi = trim($row[3]);
+            $tglRaw = trim($row[4]);
 
-        $p3 = Pegawai::create([
-            'nip' => '202401003',
-            'nama' => 'Dedi Kurniawan, S.E.',
-            'divisi_id' => $divKeu->id,
-            'jabatan' => 'Staff Administrasi Keuangan',
-            'email' => 'dedi.kurniawan@stikespantiwaluya.ac.id',
-            'no_hp' => '083456789012',
-            'jatah_cuti' => 12,
-            'sisa_cuti' => 8,
-        ]);
+            if (empty($nama) || empty($namaDivisi)) {
+                continue;
+            }
 
-        // 4. Create Sample Cuti Submissions
-        Cuti::create([
-            'kode_tracking' => 'CUTI-20260803-A1B2',
-            'pegawai_id' => $p1->id,
-            'jenis_cuti' => 'Cuti Tahunan',
-            'tanggal_mulai' => now()->addDays(2),
-            'tanggal_selesai' => now()->addDays(4),
-            'jumlah_hari' => 3,
-            'alasan' => 'Menghadiri acara keluarga di Surabaya',
-            'alamat_cuti' => 'Jl. Gubeng Kertajaya No. 12, Surabaya',
-            'no_hp_cuti' => '081234567890',
-            'status' => 'pending_kadiv',
-        ]);
+            // Parse Date
+            $tglFormatted = null;
+            if (str_contains($tglRaw, '/')) {
+                // DD/MM/YYYY
+                try {
+                    $tglFormatted = Carbon::createFromFormat('d/m/Y', $tglRaw)->format('Y-m-d');
+                } catch (\Exception $e) {
+                    $tglFormatted = date('Y-m-d');
+                }
+            } elseif (str_starts_with($tglRaw, '0025-')) {
+                $tglFormatted = str_replace('0025-', '2025-', $tglRaw);
+            } else {
+                $tglFormatted = $tglRaw;
+            }
 
-        Cuti::create([
-            'kode_tracking' => 'CUTI-20260803-C3D4',
-            'pegawai_id' => $p3->id,
-            'jenis_cuti' => 'Cuti Sakit',
-            'tanggal_mulai' => now()->subDays(1),
-            'tanggal_selesai' => now()->addDays(1),
-            'jumlah_hari' => 3,
-            'alasan' => 'Istirahat menderita flu dan demam tinggi sesuai anjuran dokter',
-            'alamat_cuti' => 'Jl. Langsep Malang',
-            'no_hp_cuti' => '083456789012',
-            'status' => 'pending_hrd',
-            'catatan_kadiv' => 'Disetujui oleh Kepala Keuangan, berkas pendukung terlampir.',
-            'kadiv_approved_at' => now()->subHours(2),
-        ]);
+            // 1. Get or Create Divisi
+            if (!isset($divisiCache[$namaDivisi])) {
+                $kodeDiv = 'DIV-' . strtoupper(Str::slug($namaDivisi));
+                $divisi = Divisi::firstOrCreate([
+                    'nama_divisi' => $namaDivisi,
+                ], [
+                    'kode_divisi' => substr($kodeDiv, 0, 20),
+                    'deskripsi' => 'Unit / Divisi ' . $namaDivisi,
+                ]);
 
-        Cuti::create([
-            'kode_tracking' => 'CUTI-20260803-E5F6',
-            'pegawai_id' => $p2->id,
-            'jenis_cuti' => 'Cuti Alasan Penting',
-            'tanggal_mulai' => now()->subDays(5),
-            'tanggal_selesai' => now()->subDays(3),
-            'jumlah_hari' => 3,
-            'alasan' => 'Mendampingi orang tua operasi di RS Panti Waluya Sawahan Malang',
-            'alamat_cuti' => 'Jl. Nusakambangan Malang',
-            'no_hp_cuti' => '082345678901',
-            'status' => 'approved',
-            'catatan_kadiv' => 'Disetujui Kaprodi RM',
-            'kadiv_approved_at' => now()->subDays(6),
-            'catatan_hrd' => 'Persyaratan lengkap dan sisa kuota aman',
-            'hrd_approved_at' => now()->subDays(5),
-            'catatan_ketua' => 'Disetujui sepenuhnya oleh Ketua STIKes',
-            'ketua_approved_at' => now()->subDays(5),
-        ]);
+                // Create Auto Kadiv User
+                $slug = Str::slug($namaDivisi);
+                $kadivEmail = "kadiv.{$slug}@stikespantiwaluya.ac.id";
+                if (User::where('email', $kadivEmail)->exists()) {
+                    $kadivEmail = "kadiv.{$slug}." . Str::lower(Str::random(3)) . "@stikespantiwaluya.ac.id";
+                }
+
+                User::firstOrCreate([
+                    'role' => 'kadiv',
+                    'divisi_id' => $divisi->id,
+                ], [
+                    'name' => 'Kepala ' . $namaDivisi,
+                    'email' => $kadivEmail,
+                    'password' => Hash::make('password123'),
+                ]);
+
+                $divisiCache[$namaDivisi] = $divisi;
+            } else {
+                $divisi = $divisiCache[$namaDivisi];
+            }
+
+            // 2. Get or Create Pegawai
+            $pegawaiKey = $nip !== '-' ? $nip : Str::slug($nama);
+            if (!isset($pegawaiCache[$pegawaiKey])) {
+                $emailPegawai = Str::slug($nama) . '@stikespantiwaluya.ac.id';
+                $pegawai = Pegawai::firstOrCreate([
+                    'nama' => $nama,
+                    'divisi_id' => $divisi->id,
+                ], [
+                    'nip' => $nip !== '-' ? $nip : 'NIP-' . rand(1000, 9999),
+                    'jabatan' => $namaDivisi,
+                    'email' => $emailPegawai,
+                    'no_hp' => '08' . rand(100000000, 999999999),
+                    'jatah_cuti' => 12,
+                    'sisa_cuti' => 12,
+                ]);
+                $pegawaiCache[$pegawaiKey] = $pegawai;
+            } else {
+                $pegawai = $pegawaiCache[$pegawaiKey];
+            }
+
+            // Track count per employee
+            if (!isset($cutiCountPerPegawai[$pegawai->id])) {
+                $cutiCountPerPegawai[$pegawai->id] = 0;
+            }
+            $cutiCountPerPegawai[$pegawai->id]++;
+
+            // 3. Create Cuti Record (1 Day per Submission)
+            $kodeTracking = 'CUTI-' . date('Ymd', strtotime($tglFormatted)) . '-' . sprintf('%04d', $no);
+
+            Cuti::create([
+                'kode_tracking' => $kodeTracking,
+                'pegawai_id' => $pegawai->id,
+                'jenis_cuti' => 'Cuti Tahunan',
+                'tanggal_mulai' => $tglFormatted,
+                'tanggal_selesai' => $tglFormatted,
+                'jumlah_hari' => 1,
+                'alasan' => 'Pengajuan Cuti Tahunan Pegawai',
+                'alamat_cuti' => 'Malang',
+                'no_hp_cuti' => $pegawai->no_hp,
+                'status' => 'approved',
+                'catatan_kadiv' => 'Disetujui oleh Kepala Divisi / Kaprodi',
+                'kadiv_approved_at' => Carbon::parse($tglFormatted)->subDays(2),
+                'catatan_hrd' => 'Disetujui oleh Tim HRD',
+                'hrd_approved_at' => Carbon::parse($tglFormatted)->subDays(1),
+                'catatan_ketua' => 'Disetujui oleh Ketua STIKes Panti Waluya',
+                'ketua_approved_at' => Carbon::parse($tglFormatted)->subDays(1),
+            ]);
+        }
+
+        fclose($file);
+
+        // Update sisa_cuti per employee
+        foreach ($pegawaiCache as $pegawai) {
+            $taken = $cutiCountPerPegawai[$pegawai->id] ?? 0;
+            $sisa = max(0, 12 - $taken);
+            $pegawai->update(['sisa_cuti' => $sisa]);
+        }
     }
 }

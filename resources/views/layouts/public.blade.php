@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Sistem Pengajuan Cuti') - STIKes Panti Waluya Malang</title>
+    <title>@yield('title', 'Sistem Pengajuan Cuti') - REHAT-PW STIKes Panti Waluya Malang</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -27,14 +27,13 @@
             <div class="flex items-center justify-between h-20">
                 <!-- Branding -->
                 <a href="{{ route('public.pengajuan') }}" class="flex items-center gap-3 group">
-                    <div class="w-11 h-11 bg-white rounded-xl p-2 shadow-md flex items-center justify-center group-hover:scale-105 transition-transform">
-                        <svg class="w-8 h-8 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-7a1 1 0 011-1h2a1 1 0 011 1v7m-4 0h4"/>
-                        </svg>
-                    </div>
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo STIKes Panti Waluya" class="h-12 w-auto object-contain drop-shadow group-hover:scale-105 transition-transform">
                     <div>
-                        <div class="text-xl font-bold tracking-tight text-white group-hover:text-blue-200 transition-colors">STIKes Panti Waluya</div>
-                        <div class="text-xs text-blue-200/80 font-medium">Sistem Pengajuan Cuti Pegawai (Malang)</div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl font-black tracking-tight text-white group-hover:text-blue-200 transition-colors">REHAT-PW</span>
+                            <span class="text-[10px] uppercase font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">Public Portal</span>
+                        </div>
+                        <div class="text-xs text-blue-200/80 font-medium">Sistem Pengajuan Cuti Pegawai STIKes Panti Waluya Malang</div>
                     </div>
                 </a>
 
@@ -96,9 +95,12 @@
 
     <!-- Footer -->
     <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-sm">
-            <p class="font-medium text-slate-300">STIKes Panti Waluya Malang &copy; {{ date('Y') }}</p>
-            <p class="text-xs text-slate-500 mt-1">Sistem Informasi Pengajuan Cuti Multi-Level Approval (Kaprodi/Kadiv &bull; HRD &bull; Ketua STIKes)</p>
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+            <div class="flex items-center gap-3">
+                <img src="{{ asset('images/logo.png') }}" class="h-6 w-auto" alt="Logo">
+                <p class="font-medium text-slate-300"><strong class="text-white">REHAT-PW</strong> &bull; STIKes Panti Waluya Malang &copy; {{ date('Y') }}</p>
+            </div>
+            <p class="text-xs text-slate-500">Sistem Informasi Pengajuan Cuti Multi-Level Approval (Kaprodi/Kadiv &bull; HRD &bull; Ketua STIKes)</p>
         </div>
     </footer>
 

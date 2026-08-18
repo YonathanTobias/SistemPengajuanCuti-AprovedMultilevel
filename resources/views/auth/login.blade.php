@@ -1,17 +1,16 @@
 @extends('layouts.public')
 
-@section('title', 'Login Pejabat / HRD')
+@section('title', 'Login Portal REHAT-PW')
 
 @section('content')
 <div class="max-w-md mx-auto py-6">
     <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
         <!-- Login Header -->
         <div class="bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 p-8 text-white text-center">
-            <div class="w-14 h-14 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-3 border border-white/20">
-                <i data-lucide="lock" class="w-7 h-7 text-blue-300"></i>
-            </div>
-            <h1 class="text-2xl font-bold tracking-tight text-white">Login Portal Internal</h1>
-            <p class="text-xs text-blue-200/80 mt-1">Kepala Divisi/Prodi &bull; Tim HRD &bull; Ketua STIKes</p>
+            <img src="{{ asset('images/logo.png') }}" alt="Logo STIKes Panti Waluya" class="h-16 w-auto mx-auto mb-3 object-contain drop-shadow">
+            <h1 class="text-3xl font-black tracking-tight text-white">REHAT-PW</h1>
+            <p class="text-xs text-amber-300 font-semibold uppercase tracking-wider mt-1">Portal Login Internal Pejabat &amp; HRD</p>
+            <p class="text-[11px] text-blue-200/80 mt-1">STIKes Panti Waluya Malang</p>
         </div>
 
         <!-- Form -->
@@ -55,7 +54,7 @@
 
                 <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-blue-900 to-indigo-900 hover:from-blue-800 hover:to-indigo-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 text-sm">
                     <i data-lucide="log-in" class="w-4 h-4"></i>
-                    <span>Masuk ke Dashboard</span>
+                    <span>Masuk ke Dashboard REHAT-PW</span>
                 </button>
             </form>
 

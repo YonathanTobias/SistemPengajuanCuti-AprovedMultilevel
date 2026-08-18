@@ -34,17 +34,19 @@
     <!-- Paper Container -->
     <div class="max-w-4xl mx-auto bg-white p-8 sm:p-12 rounded-xl shadow-xl border border-slate-200 text-slate-900 print-card">
         
-        <!-- Header Kop Surat -->
-        <div class="border-b-4 border-double border-slate-900 pb-4 mb-6 text-center relative">
-            <div class="text-xl font-bold uppercase tracking-wide">YAYASAN PANTI WALUYA MALANG</div>
-            <div class="text-2xl font-black uppercase tracking-wider text-blue-950 mt-1">SEKOLAH TINGGI ILMU KESEHATAN (STIKes) PANTI WALUYA</div>
-            <div class="text-xs italic text-slate-700 mt-1">Jl. Yulius Riefenscheid No. 12, Malang, Jawa Timur | Telp: (0341) 369003</div>
-            <div class="text-xs text-slate-600">Website: www.stikespantiwaluya.ac.id | Email: info@stikespantiwaluya.ac.id</div>
+        <!-- Header Kop Surat (With Official Logo) -->
+        <div class="border-b-4 border-double border-slate-900 pb-4 mb-6 relative flex items-center gap-6">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo STIKes" class="h-24 w-auto object-contain shrink-0">
+            <div class="text-center flex-grow">
+                <div class="text-2xl font-black uppercase tracking-wider text-blue-950">SEKOLAH TINGGI ILMU KESEHATAN (STIKes) PANTI WALUYA</div>
+                <div class="text-xs italic text-slate-700 mt-1">Jl. Yulius Usman No. 62, Malang, Jawa Timur | Telp: (0341) 369003</div>
+                <div class="text-xs text-slate-600">Website: www.stikespantiwaluya.ac.id | Email: stikes.pantiwaluyamlg@gmail.com</div>
+            </div>
         </div>
 
         <!-- Surat Title -->
         <div class="text-center my-6">
-            <h1 class="text-lg font-bold uppercase tracking-wider underline">SURAT IZIN CUTI PEGAWAI</h1>
+            <h1 class="text-lg font-bold uppercase tracking-wider underline">SURAT IZIN CUTI PEGAWAI (1 HARI)</h1>
             <p class="text-xs font-mono mt-1">Nomor: {{ $cuti->kode_tracking }}/STIKES-PW/CUTI/{{ date('Y') }}</p>
         </div>
 
@@ -74,67 +76,23 @@
                     <td class="py-1">{{ $cuti->pegawai->jabatan }}</td>
                 </tr>
                 <tr>
-                    <td class="py-1 font-semibold">Jenis Cuti yang Diambil</td>
+                    <td class="py-1 font-semibold">Jenis Cuti</td>
                     <td class="py-1">:</td>
                     <td class="py-1 font-bold text-blue-900">{{ $cuti->jenis_cuti }}</td>
                 </tr>
                 <tr>
-                    <td class="py-1 font-semibold">Jangka Waktu Cuti</td>
+                    <td class="py-1 font-semibold">Tanggal Pelaksanaan Cuti</td>
                     <td class="py-1">:</td>
-                    <td class="py-1 font-bold">{{ $cuti->jumlah_hari }} Hari Kerja ({{ $cuti->tanggal_mulai->translatedFormat('d F Y') }} s/d {{ $cuti->tanggal_selesai->translatedFormat('d F Y') }})</td>
+                    <td class="py-1 font-bold">1 Hari Kerja (Tanggal: {{ $cuti->tanggal_mulai->translatedFormat('d F Y') }})</td>
                 </tr>
                 <tr>
-                    <td class="py-1 font-semibold">Alasan Cuti</td>
+                    <td class="py-1 font-semibold">Alasan / Keperluan Cuti</td>
                     <td class="py-1">:</td>
-                    <td class="py-1 italic">"{{ $cuti->alasan }}"</td>
-                </tr>
-                <tr>
-                    <td class="py-1 font-semibold">Alamat Selama Cuti</td>
-                    <td class="py-1">:</td>
-                    <td class="py-1">{{ $cuti->alamat_cuti }} (HP: {{ $cuti->no_hp_cuti }})</td>
+                    <td class="py-1 italic">"{{ $cuti->alasan ?? 'Cuti Tahunan Pegawai' }}"</td>
                 </tr>
             </table>
 
             <p>Demikian Surat Izin Cuti ini dibuat untuk dapat dipergunakan sebagaimana mestinya dan setelah selesai menjalankan cuti yang bersangkutan diwajibkan melapor kembali kepada atasan langsung.</p>
-        </div>
-
-        <!-- Signatures Grid -->
-        <div class="grid grid-cols-3 gap-4 mt-12 text-center text-xs">
-            <!-- Kadiv Signature -->
-            <div class="space-y-12">
-                <div>
-                    <p class="font-semibold">Kepala Divisi / Kaprodi</p>
-                    <p class="text-[10px] text-slate-500">{{ $cuti->pegawai->divisi->nama_divisi ?? '-' }}</p>
-                </div>
-                <div class="pt-8 border-t border-slate-400 max-w-[160px] mx-auto">
-                    <p class="font-bold text-slate-900">&check; DIGITAL APPROVED</p>
-                    <p class="text-[10px] text-slate-500">{{ $cuti->kadiv_approved_at ? $cuti->kadiv_approved_at->format('d/m/Y H:i') : '-' }}</p>
-                </div>
-            </div>
-
-            <!-- HRD Signature -->
-            <div class="space-y-12">
-                <div>
-                    <p class="font-semibold">Tim HRD & Kepegawaian</p>
-                    <p class="text-[10px] text-slate-500">STIKes Panti Waluya</p>
-                </div>
-                <div class="pt-8 border-t border-slate-400 max-w-[160px] mx-auto">
-                    <p class="font-bold text-slate-900">&check; DIGITAL APPROVED</p>
-                    <p class="text-[10px] text-slate-500">{{ $cuti->hrd_approved_at ? $cuti->hrd_approved_at->format('d/m/Y H:i') : '-' }}</p>
-                </div>
-            </div>
-
-            <!-- Ketua STIKes Signature -->
-            <div class="space-y-12">
-                <div>
-                    <p class="font-semibold">Ketua STIKes Panti Waluya</p>
-                    <p class="text-[10px] text-slate-500">Malang, {{ $cuti->ketua_approved_at ? $cuti->ketua_approved_at->translatedFormat('d F Y') : date('d F Y') }}</p>
-                </div>
-                <div class="pt-8 border-t border-slate-400 max-w-[160px] mx-auto">
-                    <p class="font-bold text-slate-900">&check; SIGNED & APPROVED</p>
-                    <p class="text-[10px] text-slate-500">Ketua STIKes Panti Waluya</p>
-                </div>
-            </div>
         </div>
 
         <!-- Footer Verification Code -->

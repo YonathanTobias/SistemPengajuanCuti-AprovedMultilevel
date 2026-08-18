@@ -24,30 +24,25 @@ class PublicCutiController extends Controller
         $request->validate([
             'pegawai_id' => 'required|exists:pegawais,id',
             'jenis_cuti' => 'required|string',
-            'tanggal_mulai' => 'required|date|after_or_equal:today',
-            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'alasan' => 'required|string|min:10',
-            'alamat_cuti' => 'required|string|min:5',
-            'no_hp_cuti' => 'required|string|min:8',
+            'tanggal_cuti' => 'required|date|after_or_equal:today',
+            'alasan' => 'nullable|string',
             'file_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ], [
             'pegawai_id.required' => 'Silakan pilih pegawai pengaju cuti.',
-            'tanggal_mulai.after_or_equal' => 'Tanggal mulai cuti minimal hari ini.',
-            'tanggal_selesai.after_or_equal' => 'Tanggal selesai harus sama atau setelah tanggal mulai.',
-            'alasan.min' => 'Alasan cuti harus lebih jelas (minimal 10 karakter).',
+            'tanggal_cuti.after_or_equal' => 'Tanggal cuti minimal hari ini.',
             'file_pendukung.max' => 'Ukuran file pendukung maksimal 2MB.',
         ]);
 
         $pegawai = Pegawai::findOrFail($request->pegawai_id);
 
-        $start = Carbon::parse($request->tanggal_mulai);
-        $end = Carbon::parse($request->tanggal_selesai);
-        $jumlahHari = $start->diffInDays($end) + 1;
+        // Single-day leave policy: 1 submission = 1 day
+        $jumlahHari = 1;
+        $tanggalCuti = $request->tanggal_cuti;
 
-        // Check annual leave quota
+        // Check annual leave quota (1 day)
         if ($request->jenis_cuti === 'Cuti Tahunan') {
-            if ($pegawai->sisa_cuti < $jumlahHari) {
-                return back()->withInput()->with('error', "Sisa cuti tahunan saudara {$pegawai->nama} hanya {$pegawai->sisa_cuti} hari, tidak mencukupi untuk pengajuan {$jumlahHari} hari.");
+            if ($pegawai->sisa_cuti < 1) {
+                return back()->withInput()->with('error', "Sisa cuti tahunan saudara {$pegawai->nama} telah habis (0 hari). Pengajuan tidak dapat diproses.");
             }
         }
 
@@ -66,18 +61,18 @@ class PublicCutiController extends Controller
             'kode_tracking' => $kodeTracking,
             'pegawai_id' => $pegawai->id,
             'jenis_cuti' => $request->jenis_cuti,
-            'tanggal_mulai' => $request->tanggal_mulai,
-            'tanggal_selesai' => $request->tanggal_selesai,
+            'tanggal_mulai' => $tanggalCuti,
+            'tanggal_selesai' => $tanggalCuti,
             'jumlah_hari' => $jumlahHari,
-            'alasan' => $request->alasan,
-            'alamat_cuti' => $request->alamat_cuti,
-            'no_hp_cuti' => $request->no_hp_cuti,
+            'alasan' => $request->alasan ?: 'Pengajuan Cuti Tahunan Pegawai',
+            'alamat_cuti' => '-',
+            'no_hp_cuti' => $pegawai->no_hp ?? '-',
             'file_pendukung' => $filePath,
             'status' => 'pending_kadiv',
         ]);
 
         return redirect()->route('public.tracking', ['kode' => $kodeTracking])
-            ->with('success', "Pengajuan cuti berhasil dikirim! Simpan Kode Tracking Anda: {$kodeTracking}");
+            ->with('success', "Pengajuan cuti 1 hari untuk tanggal " . Carbon::parse($tanggalCuti)->translatedFormat('d F Y') . " berhasil dikirim! Kode Tracking Anda: {$kodeTracking}");
     }
 
     public function tracking(Request $request)
@@ -88,13 +83,11 @@ class PublicCutiController extends Controller
 
         if ($search) {
             $searchClean = trim($search);
-            // Search by exact tracking code or NIP
             $cuti = Cuti::with(['pegawai.divisi'])
                 ->where('kode_tracking', $searchClean)
                 ->first();
 
             if (!$cuti) {
-                // Search list by Pegawai NIP or Nama
                 $cutiList = Cuti::with(['pegawai.divisi'])
                     ->whereHas('pegawai', function ($q) use ($searchClean) {
                         $q->where('nip', $searchClean)

@@ -5,11 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Divisi;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 
 class PegawaiController extends Controller
 {
+    private function authorizeHrd()
+    {
+        if (!Auth::user() || !Auth::user()->isHrd()) {
+            abort(403, 'Akses Ditolak: Fitur Kelola Data Pegawai hanya diperuntukkan bagi HRD.');
+        }
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeHrd();
+
         $query = Pegawai::with(['divisi'])->orderBy('nama', 'asc');
 
         if ($request->filled('divisi_id')) {
@@ -33,12 +44,15 @@ class PegawaiController extends Controller
 
     public function create()
     {
+        $this->authorizeHrd();
         $divisis = Divisi::orderBy('nama_divisi', 'asc')->get();
         return view('pegawai.create', compact('divisis'));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeHrd();
+
         $request->validate([
             'nip' => 'required|string|max:30|unique:pegawais,nip',
             'nama' => 'required|string|max:100',
@@ -71,12 +85,15 @@ class PegawaiController extends Controller
 
     public function edit(Pegawai $pegawai)
     {
+        $this->authorizeHrd();
         $divisis = Divisi::orderBy('nama_divisi', 'asc')->get();
         return view('pegawai.edit', compact('pegawai', 'divisis'));
     }
 
     public function update(Request $request, Pegawai $pegawai)
     {
+        $this->authorizeHrd();
+
         $request->validate([
             'nip' => 'required|string|max:30|unique:pegawais,nip,' . $pegawai->id,
             'nama' => 'required|string|max:100',
@@ -100,11 +117,44 @@ class PegawaiController extends Controller
         ]);
 
         return redirect()->route('pegawai.index')
-            ->with('success', "Data pegawai {$pegawai->nama} berhasil diperbarui!");
+            ->with('success', "Data & sisa kuota cuti pegawai {$pegawai->nama} berhasil diperbarui!");
+    }
+
+    public function tambahCutiKhusus(Request $request, Pegawai $pegawai)
+    {
+        $this->authorizeHrd();
+
+        $request->validate([
+            'jumlah_tambahan' => 'required|integer|min:1|max:30',
+            'keterangan' => 'required|string|min:3',
+        ]);
+
+        $tambahan = (int) $request->jumlah_tambahan;
+
+        $pegawai->increment('jatah_cuti', $tambahan);
+        $pegawai->increment('sisa_cuti', $tambahan);
+
+        return redirect()->route('pegawai.index')
+            ->with('success', "Berhasil menambahkan +{$tambahan} hari Cuti Khusus untuk {$pegawai->nama}!");
+    }
+
+    public function resetKuotaManual(Request $request)
+    {
+        $this->authorizeHrd();
+
+        $newQuota = (int) $request->input('target_quota', 0);
+        
+        $count = Pegawai::query()->update([
+            'sisa_cuti' => $newQuota,
+        ]);
+
+        return redirect()->route('pegawai.index')
+            ->with('success', "Berhasil mereset sisa kuota cuti seluruh pegawai ({$count} pegawai) menjadi {$newQuota} hari!");
     }
 
     public function destroy(Pegawai $pegawai)
     {
+        $this->authorizeHrd();
         $nama = $pegawai->nama;
         $pegawai->delete();
 
