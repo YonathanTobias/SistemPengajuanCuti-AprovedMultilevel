@@ -24,24 +24,24 @@
     <!-- Top Bar -->
     <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50 border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+            <div class="flex items-center justify-between min-h-[4rem] py-2 sm:py-0">
                 <!-- Brand / Logo -->
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo STIKes Panti Waluya" class="h-10 w-auto object-contain drop-shadow">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo STIKes Panti Waluya" class="h-9 sm:h-10 w-auto object-contain drop-shadow shrink-0">
                         <div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-black text-xl tracking-tight text-white">REHAT-PW</span>
-                                <span class="text-[10px] uppercase font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">Portal Cuti</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-black text-lg sm:text-xl tracking-tight text-white">REHAT-PW</span>
+                                <span class="text-[9px] uppercase font-bold text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">Portal</span>
                             </div>
-                            <span class="text-xs text-blue-300 font-medium">STIKes Panti Waluya Malang</span>
+                            <span class="text-[11px] text-blue-300 font-medium hidden sm:inline-block">STIKes Panti Waluya Malang</span>
                         </div>
                     </a>
                 </div>
 
                 <!-- User Profile & Action -->
-                <div class="flex items-center gap-4">
-                    <div class="text-right hidden sm:block">
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden md:block">
                         <div class="text-sm font-semibold text-white">{{ Auth::user()->name }}</div>
                         <div class="text-xs text-blue-300 flex items-center justify-end gap-1">
                             <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -62,7 +62,7 @@
                         @csrf
                         <button type="submit" class="px-3 py-1.5 bg-rose-600/90 hover:bg-rose-600 text-white text-xs font-semibold rounded-lg shadow transition-colors flex items-center gap-1.5">
                             <i data-lucide="log-out" class="w-4 h-4"></i>
-                            <span>Keluar</span>
+                            <span class="hidden sm:inline">Keluar</span>
                         </button>
                     </form>
                 </div>
@@ -73,50 +73,50 @@
     <!-- Sub Navigation Menu -->
     <div class="bg-white border-b border-slate-200 shadow-sm sticky top-16 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav class="flex items-center gap-1 py-2 overflow-x-auto">
+            <nav class="flex items-center gap-1 py-2 overflow-x-auto text-xs sm:text-sm">
                 <!-- Dashboard (Tahun Berjalan) -->
                 <a href="{{ route('dashboard') }}" 
-                   class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 {{ request()->routeIs('dashboard') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                    <i data-lucide="layout-dashboard" class="w-4 h-4 text-blue-600"></i>
+                   class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('dashboard') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4 text-blue-600 shrink-0"></i>
                     <span>Dashboard (Tahun Berjalan)</span>
                 </a>
 
                 <!-- Arsip Cuti Tahunan (Per Tahun) -->
                 <a href="{{ route('arsip.index') }}" 
-                   class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 {{ request()->routeIs('arsip.*') ? 'bg-amber-50 text-amber-800 font-bold border border-amber-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                    <i data-lucide="archive" class="w-4 h-4 text-amber-600"></i>
+                   class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('arsip.*') ? 'bg-amber-50 text-amber-800 font-bold border border-amber-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                    <i data-lucide="archive" class="w-4 h-4 text-amber-600 shrink-0"></i>
                     <span>Arsip Cuti Tahunan</span>
                 </a>
 
                 {{-- FITUR KHUSUS AKUN HRD --}}
                 @if(Auth::user()->isHrd())
                     <a href="{{ route('reports.index') }}" 
-                       class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 {{ request()->routeIs('reports.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                        <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i>
-                        <span>Laporan &amp; Export Cuti</span>
+                       class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('reports.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                        <span>Laporan &amp; Export</span>
                     </a>
 
                     <a href="{{ route('users.index') }}" 
-                       class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 {{ request()->routeIs('users.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                        <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
-                        <span>Kelola User (Login)</span>
+                       class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('users.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-purple-600 shrink-0"></i>
+                        <span>Kelola User</span>
                     </a>
 
                     <a href="{{ route('pegawai.index') }}" 
-                       class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 {{ request()->routeIs('pegawai.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                        <i data-lucide="users" class="w-4 h-4 text-indigo-600"></i>
-                        <span>Kelola Pegawai (CRUD)</span>
+                       class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('pegawai.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                        <i data-lucide="users" class="w-4 h-4 text-indigo-600 shrink-0"></i>
+                        <span>Kelola Pegawai</span>
                     </a>
 
                     <a href="{{ route('divisi.index') }}" 
-                       class="px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 {{ request()->routeIs('divisi.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                        <i data-lucide="building-2" class="w-4 h-4 text-teal-600"></i>
-                        <span>Kelola Divisi/Prodi (CRUD)</span>
+                       class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('divisi.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                        <i data-lucide="building-2" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                        <span>Kelola Divisi</span>
                     </a>
                 @endif
 
                 <a href="{{ route('public.pengajuan') }}" target="_blank"
-                   class="ml-auto px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 flex items-center gap-1 rounded hover:bg-slate-50">
+                   class="ml-auto px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 flex items-center gap-1 rounded hover:bg-slate-50 shrink-0">
                     <span>Lihat Form Publik</span>
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                 </a>
@@ -125,7 +125,7 @@
     </div>
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <!-- Flash Messages -->
         @if(session('success'))
             <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-4 shadow-sm flex items-start gap-3">
@@ -152,7 +152,7 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 text-center sm:text-left">
             <div class="flex items-center gap-2">
                 <img src="{{ asset('images/logo.png') }}" class="h-5 w-auto" alt="Logo">
                 <span class="font-bold text-slate-700">REHAT-PW</span>
