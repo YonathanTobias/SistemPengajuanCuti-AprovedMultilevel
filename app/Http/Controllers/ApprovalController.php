@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cuti;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,11 +17,11 @@ class ApprovalController extends Controller
         }
 
         if ($user->divisi_id && $cuti->pegawai->divisi_id != $user->divisi_id) {
-            return back()->with('error', 'Anda hanya dapat menyetujui pengajuan cuti pegawai dari divisi Anda sendiri.');
+            return back()->with('error', 'Anda hanya dapat menyetujui pengajuan cuti/izin pegawai dari divisi Anda sendiri.');
         }
 
         if ($cuti->status !== 'pending_kadiv') {
-            return back()->with('error', 'Pengajuan cuti ini tidak berada dalam status menunggu persetujuan Kadiv.');
+            return back()->with('error', 'Pengajuan ini tidak berada dalam status menunggu persetujuan Kadiv.');
         }
 
         $cuti->update([
@@ -31,7 +30,7 @@ class ApprovalController extends Controller
             'kadiv_approved_at' => now(),
         ]);
 
-        return back()->with('success', "Pengajuan cuti {$cuti->kode_tracking} disetujui oleh Kepala Divisi. Diteruskan ke HRD.");
+        return back()->with('success', "Pengajuan {$cuti->kode_tracking} disetujui oleh Kepala Divisi. Diteruskan ke HRD.");
     }
 
     public function approveHrd(Request $request, Cuti $cuti)
@@ -43,7 +42,7 @@ class ApprovalController extends Controller
         }
 
         if ($cuti->status !== 'pending_hrd') {
-            return back()->with('error', 'Pengajuan cuti ini tidak berada dalam status menunggu persetujuan HRD.');
+            return back()->with('error', 'Pengajuan ini tidak berada dalam status menunggu persetujuan HRD.');
         }
 
         $cuti->update([
@@ -52,7 +51,7 @@ class ApprovalController extends Controller
             'hrd_approved_at' => now(),
         ]);
 
-        return back()->with('success', "Pengajuan cuti {$cuti->kode_tracking} disetujui oleh HRD. Diteruskan ke Ketua STIKes.");
+        return back()->with('success', "Pengajuan {$cuti->kode_tracking} disetujui oleh HRD. Diteruskan ke Ketua STIKes.");
     }
 
     public function approveKetua(Request $request, Cuti $cuti)
@@ -64,22 +63,28 @@ class ApprovalController extends Controller
         }
 
         if ($cuti->status !== 'pending_ketua') {
-            return back()->with('error', 'Pengajuan cuti ini tidak berada dalam status menunggu persetujuan Ketua STIKes.');
+            return back()->with('error', 'Pengajuan ini tidak berada dalam status menunggu persetujuan Ketua STIKes.');
         }
 
-        // Final approval: deduct leave quota if annual leave
         $pegawai = $cuti->pegawai;
+
+        // Potong kuota sesuai jenis pengajuan
         if ($cuti->jenis_cuti === 'Cuti Tahunan') {
-            $pegawai->decrement('sisa_cuti', $cuti->jumlah_hari);
+            $pegawai->decrement('sisa_cuti', $cuti->jumlah_hari ?: 1);
+        } elseif ($cuti->jenis_cuti === 'Cuti Kompensasi Lembur') {
+            $pegawai->decrement('saldo_lembur', 540); // 1 hari = 9 jam = 540 menit
+        } elseif (in_array($cuti->jenis_cuti, ['Izin Pulang Cepat', 'Izin Datang Terlambat'])) {
+            $menitPotong = $cuti->jumlah_menit ?: (($cuti->jumlah_jam ?: 1) * 60);
+            $pegawai->decrement('saldo_lembur', $menitPotong); // Potong tepat sejumlah menit lembur
         }
 
         $cuti->update([
             'status' => 'approved',
-            'catatan_ketua' => $request->catatan ?: 'Pengajuan Cuti Disetujui Sepenuhnya oleh Ketua STIKes.',
+            'catatan_ketua' => $request->catatan ?: 'Pengajuan Disetujui Sepenuhnya oleh Ketua STIKes.',
             'ketua_approved_at' => now(),
         ]);
 
-        return back()->with('success', "Pengajuan cuti {$cuti->kode_tracking} TELAH DISETUJUI SEPENUHNYA oleh Ketua STIKes! Surat Cuti telah dapat dicetak.");
+        return back()->with('success', "Pengajuan {$cuti->kode_tracking} TELAH DISETUJUI SEPENUHNYA oleh Ketua STIKes!");
     }
 
     public function reject(Request $request, Cuti $cuti)
@@ -106,6 +111,6 @@ class ApprovalController extends Controller
             'catatan_penolakan' => "Ditolak oleh {$roleName}: " . $request->catatan_penolakan,
         ]);
 
-        return back()->with('info', "Pengajuan cuti {$cuti->kode_tracking} ditolak oleh {$roleName}.");
+        return back()->with('info', "Pengajuan {$cuti->kode_tracking} ditolak oleh {$roleName}.");
     }
 }

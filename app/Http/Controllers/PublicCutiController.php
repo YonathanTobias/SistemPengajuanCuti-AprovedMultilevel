@@ -25,25 +25,62 @@ class PublicCutiController extends Controller
             'pegawai_id' => 'required|exists:pegawais,id',
             'jenis_cuti' => 'required|string',
             'tanggal_cuti' => 'required|date|after_or_equal:today',
+            'izin_jam' => 'nullable|integer|min:0|max:3',
+            'izin_menit' => 'nullable|integer|min:0|max:59',
             'alasan' => 'nullable|string',
             'file_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ], [
-            'pegawai_id.required' => 'Silakan pilih pegawai pengaju cuti.',
-            'tanggal_cuti.after_or_equal' => 'Tanggal cuti minimal hari ini.',
+            'pegawai_id.required' => 'Silakan pilih pegawai pengaju cuti/izin.',
+            'tanggal_cuti.after_or_equal' => 'Tanggal pelaksanaan minimal hari ini.',
             'file_pendukung.max' => 'Ukuran file pendukung maksimal 2MB.',
         ]);
 
         $pegawai = Pegawai::findOrFail($request->pegawai_id);
-
-        // Single-day leave policy: 1 submission = 1 day
-        $jumlahHari = 1;
         $tanggalCuti = $request->tanggal_cuti;
+        $jumlahHari = 1;
+        $jumlahJam = null;
+        $jumlahMenit = null;
 
-        // Check annual leave quota (1 day)
+        // 1. Cuti Tahunan (Potong 1 Hari Kuota)
         if ($request->jenis_cuti === 'Cuti Tahunan') {
             if ($pegawai->sisa_cuti < 1) {
                 return back()->withInput()->with('error', "Sisa cuti tahunan saudara {$pegawai->nama} telah habis (0 hari). Pengajuan tidak dapat diproses.");
             }
+            $jumlahHari = 1;
+        }
+
+        // 2. Cuti Kompensasi Lembur Penuh (Tukar 9 Jam = 540 Menit = 1 Hari Libur)
+        elseif ($request->jenis_cuti === 'Cuti Kompensasi Lembur') {
+            if ($pegawai->saldo_lembur < 540) {
+                return back()->withInput()->with('error', "Saldo jam lembur saudara {$pegawai->nama} tidak mencukupi (Minimal 9 Jam / 540 Menit untuk 1 hari libur kompensasi, saldo saat ini: {$pegawai->saldo_lembur_formatted}).");
+            }
+            $jumlahHari = 1;
+            $jumlahJam = 9;
+            $jumlahMenit = 540;
+        }
+
+        // 3. Izin Parsial Jam Lembur: Pulang Cepat atau Datang Terlambat (Bebas Jam & Menit, Maksimal 3 Jam / 180 Menit)
+        elseif (in_array($request->jenis_cuti, ['Izin Pulang Cepat', 'Izin Datang Terlambat'])) {
+            $jam = (int) ($request->izin_jam ?? 0);
+            $menit = (int) ($request->izin_menit ?? 0);
+            $totalMenitIzin = ($jam * 60) + $menit;
+
+            if ($totalMenitIzin <= 0) {
+                return back()->withInput()->with('error', "Silakan tentukan durasi jam atau menit izin yang dibutuhkan.");
+            }
+
+            if ($totalMenitIzin > 180) {
+                return back()->withInput()->with('error', "Izin pulang cepat / datang terlambat maksimal 3 jam (180 menit) per pengajuan.");
+            }
+
+            if ($pegawai->saldo_lembur < $totalMenitIzin) {
+                $formatDibutuhkan = $jam > 0 && $menit > 0 ? "{$jam} Jam {$menit} Menit" : ($jam > 0 ? "{$jam} Jam" : "{$menit} Menit");
+                return back()->withInput()->with('error', "Saldo jam lembur saudara {$pegawai->nama} tidak mencukupi (Membutuhkan {$formatDibutuhkan}, saldo Anda saat ini: {$pegawai->saldo_lembur_formatted}).");
+            }
+
+            $jumlahHari = 0; // Izin jam tidak memotong 1 hari penuh
+            $jumlahJam = (int) ceil($totalMenitIzin / 60);
+            $jumlahMenit = $totalMenitIzin;
         }
 
         $filePath = null;
@@ -64,7 +101,9 @@ class PublicCutiController extends Controller
             'tanggal_mulai' => $tanggalCuti,
             'tanggal_selesai' => $tanggalCuti,
             'jumlah_hari' => $jumlahHari,
-            'alasan' => $request->alasan ?: 'Pengajuan Cuti Tahunan Pegawai',
+            'jumlah_jam' => $jumlahJam,
+            'jumlah_menit' => $jumlahMenit,
+            'alasan' => $request->alasan ?: 'Pengajuan Izin/Cuti Pegawai',
             'alamat_cuti' => '-',
             'no_hp_cuti' => $pegawai->no_hp ?? '-',
             'file_pendukung' => $filePath,
@@ -72,7 +111,7 @@ class PublicCutiController extends Controller
         ]);
 
         return redirect()->route('public.tracking', ['kode' => $kodeTracking])
-            ->with('success', "Pengajuan cuti 1 hari untuk tanggal " . Carbon::parse($tanggalCuti)->translatedFormat('d F Y') . " berhasil dikirim! Kode Tracking Anda: {$kodeTracking}");
+            ->with('success', "Pengajuan {$request->jenis_cuti} ({$cuti->durasi_formatted}) untuk tanggal " . Carbon::parse($tanggalCuti)->translatedFormat('d F Y') . " berhasil dikirim! Kode Tracking Anda: {$kodeTracking}");
     }
 
     public function tracking(Request $request)

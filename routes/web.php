@@ -5,6 +5,7 @@ use App\Http\Controllers\ArsipController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DivisiController;
+use App\Http\Controllers\LemburController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PublicCutiController;
 use App\Http\Controllers\ReportController;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Route;
 // Public Access Routes (No Login Required)
 Route::get('/', [PublicCutiController::class, 'index'])->name('public.pengajuan');
 Route::post('/pengajuan-cuti', [PublicCutiController::class, 'store'])->name('public.pengajuan.store');
+Route::get('/pengajuan-lembur', [LemburController::class, 'publicCreate'])->name('public.pengajuan_lembur');
+Route::post('/pengajuan-lembur', [LemburController::class, 'publicStore'])->name('public.pengajuan_lembur.store');
 Route::get('/tracking', [PublicCutiController::class, 'tracking'])->name('public.tracking');
 Route::get('/surat-cuti/{kode_tracking}', [PublicCutiController::class, 'suratCuti'])->name('public.surat');
 
@@ -30,11 +33,17 @@ Route::middleware('auth')->group(function () {
     // Dedicated Annual Archive Module (Per Tahun)
     Route::get('/arsip', [ArsipController::class, 'index'])->name('arsip.index');
 
-    // Multi-Level Approvals
+    // Multi-Level Approvals Cuti
     Route::post('/cuti/{cuti}/approve-kadiv', [ApprovalController::class, 'approveKadiv'])->name('approval.kadiv');
     Route::post('/cuti/{cuti}/approve-hrd', [ApprovalController::class, 'approveHrd'])->name('approval.hrd');
     Route::post('/cuti/{cuti}/approve-ketua', [ApprovalController::class, 'approveKetua'])->name('approval.ketua');
     Route::post('/cuti/{cuti}/reject', [ApprovalController::class, 'reject'])->name('approval.reject');
+
+    // Persetujuan Simpanan Jam Lembur
+    Route::get('/lembur', [LemburController::class, 'index'])->name('lembur.index');
+    Route::post('/lembur/{lembur}/approve-kadiv', [LemburController::class, 'approveKadiv'])->name('lembur.approve-kadiv');
+    Route::post('/lembur/{lembur}/approve-hrd', [LemburController::class, 'approveHrd'])->name('lembur.approve-hrd');
+    Route::post('/lembur/{lembur}/reject', [LemburController::class, 'reject'])->name('lembur.reject');
 
     // Export & Reports (CSV, XLSX, PDF)
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

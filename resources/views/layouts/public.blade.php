@@ -53,26 +53,32 @@
                 </div>
 
                 <!-- Nav Links (Desktop & Mobile Dropdown) -->
-                <nav id="navMenu" class="hidden md:flex flex-col md:flex-row items-stretch md:items-center gap-2 sm:gap-3 pt-2 md:pt-0 border-t md:border-t-0 border-white/10">
+                <nav id="navMenu" class="hidden md:flex flex-col md:flex-row items-stretch md:items-center gap-2 sm:gap-2.5 pt-2 md:pt-0 border-t md:border-t-0 border-white/10 text-xs sm:text-sm">
                     <a href="{{ route('public.pengajuan') }}" 
-                       class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center md:justify-start gap-2 {{ request()->routeIs('public.pengajuan') ? 'bg-white/20 text-white shadow-inner border border-white/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
+                       class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('public.pengajuan') ? 'bg-white/20 text-white shadow-inner border border-white/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
                         <i data-lucide="file-plus-2" class="w-4 h-4"></i>
                         <span>Pengajuan Cuti</span>
                     </a>
 
+                    <a href="{{ route('public.pengajuan_lembur') }}" 
+                       class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('public.pengajuan_lembur*') ? 'bg-amber-500/30 text-amber-200 shadow-inner border border-amber-400/40 font-bold' : 'text-amber-200 hover:bg-white/10 hover:text-white' }}">
+                        <i data-lucide="clock" class="w-4 h-4 text-amber-300"></i>
+                        <span>Klaim Lembur</span>
+                    </a>
+
                     <a href="{{ route('public.tracking') }}" 
-                       class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center md:justify-start gap-2 {{ request()->routeIs('public.tracking') ? 'bg-white/20 text-white shadow-inner border border-white/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
+                       class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('public.tracking') ? 'bg-white/20 text-white shadow-inner border border-white/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
                         <i data-lucide="search" class="w-4 h-4"></i>
-                        <span>Lacak Status Cuti</span>
+                        <span>Lacak Status</span>
                     </a>
                     
                     @auth
-                        <a href="{{ route('dashboard') }}" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2">
+                        <a href="{{ route('dashboard') }}" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold shadow-md transition-all flex items-center justify-center gap-1.5">
                             <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                            <span>Dashboard ({{ strtoupper(Auth::user()->role) }})</span>
+                            <span>Dashboard</span>
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="px-3.5 py-2 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2">
+                        <a href="{{ route('login') }}" class="px-3.5 py-2 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white rounded-xl font-bold shadow-md transition-all flex items-center justify-center gap-1.5">
                             <i data-lucide="log-in" class="w-4 h-4"></i>
                             <span>Login Pejabat</span>
                         </a>
@@ -112,11 +118,11 @@
     <!-- Footer -->
     <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 mt-auto">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-center sm:text-left">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
                 <img src="{{ asset('images/logo.png') }}" class="h-5 w-auto" alt="Logo">
                 <p class="font-medium text-slate-300"><strong class="text-white">REHAT-PW</strong> &bull; STIKes Panti Waluya Malang &copy; {{ date('Y') }}</p>
             </div>
-            <p class="text-xs text-slate-500">Sistem Informasi Pengajuan Cuti Multi-Level Approval</p>
+            <p class="text-xs text-slate-500">Sistem Informasi Pengajuan Cuti &amp; Simpanan Jam Lembur</p>
         </div>
     </footer>
 

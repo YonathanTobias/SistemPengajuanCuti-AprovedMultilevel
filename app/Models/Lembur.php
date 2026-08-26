@@ -5,42 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cuti extends Model
+class Lembur extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'kode_tracking',
         'pegawai_id',
-        'jenis_cuti',
-        'tanggal_mulai',
-        'tanggal_selesai',
-        'jumlah_hari',
+        'kode_tracking',
+        'tanggal_lembur',
         'jumlah_jam',
         'jumlah_menit',
-        'alasan',
-        'alamat_cuti',
-        'no_hp_cuti',
-        'file_pendukung',
+        'kegiatan',
+        'file_bukti',
         'status',
-        'catatan_kadiv',
-        'kadiv_approved_at',
-        'catatan_hrd',
-        'hrd_approved_at',
-        'catatan_ketua',
-        'ketua_approved_at',
-        'rejected_by',
         'catatan_penolakan',
     ];
 
     protected $casts = [
-        'tanggal_mulai' => 'date',
-        'tanggal_selesai' => 'date',
+        'tanggal_lembur' => 'date',
         'jumlah_jam' => 'integer',
         'jumlah_menit' => 'integer',
-        'kadiv_approved_at' => 'datetime',
-        'hrd_approved_at' => 'datetime',
-        'ketua_approved_at' => 'datetime',
     ];
 
     protected $appends = [
@@ -54,10 +38,6 @@ class Cuti extends Model
 
     public function getDurasiFormattedAttribute(): string
     {
-        if ($this->jumlah_hari > 0) {
-            return "{$this->jumlah_hari} Hari";
-        }
-
         $totalMenit = (int) ($this->jumlah_menit ?: ($this->jumlah_jam * 60));
         $jam = floor($totalMenit / 60);
         $menit = $totalMenit % 60;
