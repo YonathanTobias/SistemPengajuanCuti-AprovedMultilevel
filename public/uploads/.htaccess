@@ -1,0 +1,46 @@
+# ==============================================================================
+# REHAT-PW SECURITY HARDENING: ANTI-BACKDOOR & ANTI-WEBSHELL FOR UPLOADS
+# ==============================================================================
+
+# 1. Matikan eksekusi script PHP / CGI / SSI di folder uploads
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# 2. Matikan eksekusi file executable & directory listing
+Options -Indexes -ExecCGI
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .phar .cgi .pl .asp .aspx .jsp .exe .sh .py .rb .bat .cmd .vbs
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .phar .cgi .pl .asp .aspx .jsp .exe .sh .py .rb .bat .cmd .vbs
+
+# 3. Blokir total semua request ke file executable/script (Backdoor/Webshell protection)
+<FilesMatch "(?i)\.(php|phtml|php3|php4|php5|php7|php8|phps|phar|cgi|pl|asp|aspx|jsp|exe|sh|py|rb|bat|cmd|vbs|htaccess|env|ini|log|sh|bash)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# 4. Hanya izinkan akses ke file dokumen & gambar yang sah
+<FilesMatch "(?i)\.(pdf|jpg|jpeg|png|webp|gif|svg|doc|docx|xls|xlsx|csv)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</FilesMatch>
+
+# 5. Mencegah MIME-type sniffing
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>

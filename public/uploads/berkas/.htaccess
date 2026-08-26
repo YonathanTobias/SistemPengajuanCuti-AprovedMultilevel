@@ -1,0 +1,41 @@
+# ==============================================================================
+# REHAT-PW SECURITY HARDENING: ANTI-BACKDOOR FOR BERKAS UPLOADS
+# ==============================================================================
+
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+Options -Indexes -ExecCGI
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .phar .cgi .pl .asp .aspx .jsp .exe .sh .py .rb .bat .cmd .vbs
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .phar .cgi .pl .asp .aspx .jsp .exe .sh .py .rb .bat .cmd .vbs
+
+<FilesMatch "(?i)\.(php|phtml|php3|php4|php5|php7|php8|phps|phar|cgi|pl|asp|aspx|jsp|exe|sh|py|rb|bat|cmd|vbs|htaccess|env|ini|log|sh|bash)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+<FilesMatch "(?i)\.(pdf|jpg|jpeg|png|webp|gif|svg|doc|docx|xls|xlsx|csv)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
