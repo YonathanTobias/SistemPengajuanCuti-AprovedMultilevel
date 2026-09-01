@@ -6,6 +6,7 @@ use App\Models\Cuti;
 use App\Models\Divisi;
 use App\Models\Lembur;
 use App\Models\Pegawai;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -44,8 +45,39 @@ class SistemCutiTest extends TestCase
         ]);
     }
 
+    public function test_feature_switch_can_disable_and_enable_overtime_module()
+    {
+        // 1. Matikan fitur lembur
+        Setting::set('feature_lembur', false);
+        $this->assertFalse(Setting::isLemburEnabled());
+
+        // Halaman pengajuan lembur redirect jika fitur mati
+        $response = $this->get(route('public.pengajuan_lembur'));
+        $response->assertRedirect(route('public.pengajuan'));
+
+        // Form publik pengajuan cuti tidak menampilkan opsi Cuti Kompensasi Lembur
+        $viewResponse = $this->get(route('public.pengajuan'));
+        $viewResponse->assertDontSee('Cuti Kompensasi Lembur');
+
+        // 2. HRD menyalakan fitur lembur via tombol toggle
+        $hrd = User::create([
+            'name' => 'HRD Admin',
+            'email' => 'hrd@stikes.ac.id',
+            'password' => bcrypt('password123'),
+            'role' => 'hrd',
+        ]);
+
+        $this->actingAs($hrd)->post(route('settings.toggle-lembur'))->assertRedirect();
+        $this->assertTrue(Setting::isLemburEnabled());
+
+        // Sekarang form publik lembur aktif
+        $this->get(route('public.pengajuan_lembur'))->assertOk();
+    }
+
     public function test_overtime_bank_flow_and_compensatory_leave_and_hourly_permissions()
     {
+        Setting::set('feature_lembur', true);
+
         $divisi = Divisi::create(['kode_divisi' => 'DIV-01', 'nama_divisi' => 'Keperawatan']);
         $pegawai = Pegawai::create([
             'nip' => '12345',

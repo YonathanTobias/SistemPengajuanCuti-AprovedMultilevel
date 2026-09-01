@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Lembur;
 use App\Models\Pegawai;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -15,6 +16,10 @@ class LemburController extends Controller
      */
     public function publicCreate()
     {
+        if (!Setting::isLemburEnabled()) {
+            return redirect()->route('public.pengajuan')->with('info', 'Fitur Simpanan Jam Lembur saat ini sedang dinonaktifkan.');
+        }
+
         $pegawais = Pegawai::with('divisi')->orderBy('nama')->get();
         return view('public.pengajuan_lembur', compact('pegawais'));
     }
@@ -24,6 +29,10 @@ class LemburController extends Controller
      */
     public function publicStore(Request $request)
     {
+        if (!Setting::isLemburEnabled()) {
+            return redirect()->route('public.pengajuan')->with('error', 'Fitur Simpanan Jam Lembur saat ini sedang dinonaktifkan.');
+        }
+
         $request->validate([
             'pegawai_id' => 'required|exists:pegawais,id',
             'tanggal_lembur' => 'required|date',

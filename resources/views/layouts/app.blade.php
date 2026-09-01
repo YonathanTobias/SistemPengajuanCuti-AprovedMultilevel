@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard Portal') - REHAT-PW STIKes Panti Waluya Malang</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>@yield('title', 'Dashboard') - REHAT-PW STIKes Panti Waluya Malang</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -13,126 +13,124 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body {
+        html, body {
             font-family: 'Outfit', sans-serif;
             background-color: #F1F5F9;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+        select {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-slate-800">
+<body class="min-h-screen flex flex-col text-slate-800 antialiased max-w-full overflow-x-hidden">
 
-    <!-- Top Bar -->
-    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between min-h-[4rem] py-2 sm:py-0">
-                <!-- Brand / Logo -->
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo STIKes Panti Waluya" class="h-9 sm:h-10 w-auto object-contain drop-shadow shrink-0">
-                        <div>
+    <!-- Top Navigation Bar -->
+    <header class="bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 text-white shadow-md border-b border-indigo-800/60 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2.5 md:py-0 min-h-[4rem] gap-2 md:gap-0">
+                <!-- Branding & Mobile Toggle -->
+                <div class="flex items-center justify-between w-full md:w-auto">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2 group">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo STIKes Panti Waluya" class="h-9 sm:h-11 w-auto object-contain drop-shadow group-hover:scale-105 transition-transform shrink-0">
+                        <div class="leading-tight">
                             <div class="flex items-center gap-1.5">
-                                <span class="font-black text-lg sm:text-xl tracking-tight text-white">REHAT-PW</span>
-                                <span class="text-[9px] uppercase font-bold text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">Portal</span>
+                                <span class="text-lg sm:text-2xl font-black tracking-tight text-white group-hover:text-blue-200 transition-colors">REHAT-PW</span>
+                                <span class="text-[9px] uppercase font-bold text-teal-300 bg-teal-500/20 px-1.5 py-0.5 rounded border border-teal-500/30 hidden xs:inline-block">Portal</span>
                             </div>
-                            <span class="text-[11px] text-blue-300 font-medium hidden sm:inline-block">STIKes Panti Waluya Malang</span>
+                            <div class="text-[10px] sm:text-xs text-blue-200/80 font-medium truncate max-w-[200px] sm:max-w-none">STIKes Panti Waluya Malang</div>
                         </div>
                     </a>
+
+                    <!-- Mobile Menu Button -->
+                    <button type="button" onclick="toggleAppMobileMenu()" class="md:hidden p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white focus:outline-none shrink-0" aria-label="Toggle Navigation">
+                        <i data-lucide="menu" id="appMenuOpenIcon" class="w-5 h-5"></i>
+                        <i data-lucide="x" id="appMenuCloseIcon" class="w-5 h-5 hidden"></i>
+                    </button>
                 </div>
 
-                <!-- User Profile & Action -->
-                <div class="flex items-center gap-3">
-                    <div class="text-right hidden md:block">
-                        <div class="text-sm font-semibold text-white">{{ Auth::user()->name }}</div>
-                        <div class="text-xs text-blue-300 flex items-center justify-end gap-1">
-                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
-                            @if(Auth::user()->isKadiv())
-                                Kepala Divisi {{ Auth::user()->divisi ? '(' . Auth::user()->divisi->nama_divisi . ')' : '' }}
-                            @elseif(Auth::user()->isHrd())
-                                Tim HRD & Kepegawaian (Admin)
-                            @elseif(Auth::user()->isKetua())
-                                Ketua STIKes
-                            @else
-                                {{ strtoupper(Auth::user()->role) }}
-                            @endif
-                        </div>
-                    </div>
+                <!-- Nav Links & User Info -->
+                <div id="appNavMenu" class="hidden md:flex flex-col md:flex-row items-stretch md:items-center gap-2 sm:gap-4 pt-2 md:pt-0 border-t md:border-t-0 border-white/10 text-xs sm:text-sm">
+                    <nav class="flex flex-col md:flex-row items-stretch md:items-center gap-1 sm:gap-1.5">
+                        <a href="{{ route('dashboard') }}" 
+                           class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('dashboard') ? 'bg-white/20 text-white shadow-inner border border-white/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                            <span>Dashboard</span>
+                        </a>
 
-                    <!-- Logout Button -->
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="px-3 py-1.5 bg-rose-600/90 hover:bg-rose-600 text-white text-xs font-semibold rounded-lg shadow transition-colors flex items-center gap-1.5">
-                            <i data-lucide="log-out" class="w-4 h-4"></i>
-                            <span class="hidden sm:inline">Keluar</span>
-                        </button>
-                    </form>
+                        @if($isLemburEnabled ?? false)
+                            <a href="{{ route('lembur.index') }}" 
+                               class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('lembur.*') ? 'bg-amber-500/30 text-amber-200 shadow-inner border border-amber-400/40 font-bold' : 'text-amber-200 hover:bg-white/10 hover:text-white' }}">
+                                <i data-lucide="clock" class="w-4 h-4 text-amber-300"></i>
+                                <span>Klaim Lembur</span>
+                            </a>
+                        @endif
+
+                        <a href="{{ route('arsip.index') }}" 
+                           class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('arsip.*') ? 'bg-white/20 text-white shadow-inner border border-white/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
+                            <i data-lucide="archive" class="w-4 h-4"></i>
+                            <span>Arsip Tahunan</span>
+                        </a>
+
+                        <a href="{{ route('reports.index') }}" 
+                           class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('reports.*') ? 'bg-white/20 text-white shadow-inner border border-white/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                            <span>Laporan &amp; Rekap</span>
+                        </a>
+
+                        @if(Auth::user()->isHrd())
+                            <a href="{{ route('pegawai.index') }}" 
+                               class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('pegawai.*') ? 'bg-white/20 text-white shadow-inner border border-white/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
+                                <i data-lucide="users" class="w-4 h-4"></i>
+                                <span>Pegawai</span>
+                            </a>
+                            <a href="{{ route('divisi.index') }}" 
+                               class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('divisi.*') ? 'bg-white/20 text-white shadow-inner border border-white/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
+                                <i data-lucide="building-2" class="w-4 h-4"></i>
+                                <span>Divisi/Prodi</span>
+                            </a>
+                            <a href="{{ route('users.index') }}" 
+                               class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('users.*') ? 'bg-white/20 text-white shadow-inner border border-white/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
+                                <i data-lucide="user-cog" class="w-4 h-4"></i>
+                                <span>User Akun</span>
+                            </a>
+                        @endif
+                    </nav>
+
+                    <div class="flex items-center justify-between md:justify-start gap-3 border-t md:border-t-0 md:border-l border-white/15 pt-2 md:pt-0 md:pl-4">
+                        <div class="text-left leading-tight">
+                            <div class="font-bold text-white text-xs">{{ Auth::user()->name }}</div>
+                            <div class="text-[10px] text-teal-300 font-semibold uppercase">
+                                @if(Auth::user()->isKadiv())
+                                    Kepala Divisi {{ Auth::user()->divisi->nama_divisi ?? '' }}
+                                @elseif(Auth::user()->isHrd())
+                                    HRD &amp; Kepegawaian
+                                @elseif(Auth::user()->isKetua())
+                                    Ketua STIKes
+                                @else
+                                    Administrator
+                                @endif
+                            </div>
+                        </div>
+
+                        <form action="{{ route('logout') }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="p-2 rounded-xl bg-rose-500/20 hover:bg-rose-600 text-rose-200 hover:text-white transition-all text-xs font-semibold flex items-center gap-1" title="Keluar">
+                                <i data-lucide="log-out" class="w-4 h-4"></i>
+                                <span class="md:hidden">Keluar</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Sub Navigation Menu -->
-    <div class="bg-white border-b border-slate-200 shadow-sm sticky top-16 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav class="flex items-center gap-1 py-2 overflow-x-auto text-xs sm:text-sm">
-                <!-- Dashboard (Tahun Berjalan) -->
-                <a href="{{ route('dashboard') }}" 
-                   class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('dashboard') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                    <i data-lucide="layout-dashboard" class="w-4 h-4 text-blue-600 shrink-0"></i>
-                    <span>Persetujuan Cuti</span>
-                </a>
-
-                <!-- Approval Klaim Lembur -->
-                <a href="{{ route('lembur.index') }}" 
-                   class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('lembur.*') ? 'bg-amber-50 text-amber-800 font-bold border border-amber-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                    <i data-lucide="clock" class="w-4 h-4 text-amber-600 shrink-0"></i>
-                    <span>Klaim Lembur</span>
-                </a>
-
-                <!-- Arsip Cuti Tahunan (Per Tahun) -->
-                <a href="{{ route('arsip.index') }}" 
-                   class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('arsip.*') ? 'bg-amber-50 text-amber-800 font-bold border border-amber-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                    <i data-lucide="archive" class="w-4 h-4 text-amber-600 shrink-0"></i>
-                    <span>Arsip Cuti Tahunan</span>
-                </a>
-
-                {{-- FITUR KHUSUS AKUN HRD --}}
-                @if(Auth::user()->isHrd())
-                    <a href="{{ route('reports.index') }}" 
-                       class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('reports.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                        <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600 shrink-0"></i>
-                        <span>Laporan &amp; Export</span>
-                    </a>
-
-                    <a href="{{ route('users.index') }}" 
-                       class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('users.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                        <i data-lucide="shield-check" class="w-4 h-4 text-purple-600 shrink-0"></i>
-                        <span>Kelola User</span>
-                    </a>
-
-                    <a href="{{ route('pegawai.index') }}" 
-                       class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('pegawai.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                        <i data-lucide="users" class="w-4 h-4 text-indigo-600 shrink-0"></i>
-                        <span>Kelola Pegawai</span>
-                    </a>
-
-                    <a href="{{ route('divisi.index') }}" 
-                       class="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 {{ request()->routeIs('divisi.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                        <i data-lucide="building-2" class="w-4 h-4 text-teal-600 shrink-0"></i>
-                        <span>Kelola Divisi</span>
-                    </a>
-                @endif
-
-                <a href="{{ route('public.pengajuan') }}" target="_blank"
-                   class="ml-auto px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 flex items-center gap-1 rounded hover:bg-slate-50 shrink-0">
-                    <span>Lihat Form Publik</span>
-                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                </a>
-            </nav>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <!-- Main Workspace -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 overflow-x-hidden">
         <!-- Flash Messages -->
         @if(session('success'))
             <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-4 shadow-sm flex items-start gap-3">
@@ -158,19 +156,32 @@
         @yield('content')
     </main>
 
+    <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 text-center sm:text-left">
-            <div class="flex items-center gap-2">
-                <img src="{{ asset('images/logo.png') }}" class="h-5 w-auto" alt="Logo">
-                <span class="font-bold text-slate-700">REHAT-PW</span>
-                <span>&bull; STIKes Panti Waluya Malang</span>
-            </div>
-            <div>Sistem Informasi Cuti &amp; Simpanan Lembur Pegawai &copy; {{ date('Y') }}</div>
+            <p><strong class="text-slate-800">REHAT-PW</strong> &bull; STIKes Panti Waluya Malang &copy; {{ date('Y') }}</p>
+            <p>Sistem Rekapitulasi &amp; Pengajuan Cuti Berjenjang</p>
         </div>
     </footer>
 
     <script>
         lucide.createIcons();
+
+        function toggleAppMobileMenu() {
+            const menu = document.getElementById('appNavMenu');
+            const openIcon = document.getElementById('appMenuOpenIcon');
+            const closeIcon = document.getElementById('appMenuCloseIcon');
+
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                openIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+            } else {
+                menu.classList.add('hidden');
+                openIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            }
+        }
     </script>
     @stack('scripts')
 </body>

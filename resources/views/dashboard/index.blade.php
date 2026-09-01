@@ -40,6 +40,50 @@
         </div>
     </div>
 
+    @if($user->isHrd())
+        <!-- Feature Switch: Simpanan Jam Lembur -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-xl {{ ($isLemburEnabled ?? false) ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500' }} flex items-center justify-center shrink-0">
+                    <i data-lucide="clock" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-slate-900">Fitur Simpanan Jam Lembur &amp; Cuti Kompensasi</span>
+                        @if($isLemburEnabled ?? false)
+                            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">AKTIF</span>
+                        @else
+                            <span class="px-2 py-0.5 bg-slate-200 text-slate-700 text-[10px] font-bold rounded-full">NONAKTIF (UJI COBA CUTI)</span>
+                        @endif
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                        @if($isLemburEnabled ?? false)
+                            Fitur klaim jam lembur dan penukaran cuti kompensasi sedang dibuka untuk pegawai.
+                        @else
+                            Fitur lembur sedang dimatikan. Pegawai hanya dapat mengajukan Cuti murni (Cuti Tahunan, Sakit, dll.).
+                        @endif
+                    </p>
+                </div>
+            </div>
+            <div>
+                <form action="{{ route('settings.toggle-lembur') }}" method="POST">
+                    @csrf
+                    @if($isLemburEnabled ?? false)
+                        <button type="submit" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5">
+                            <i data-lucide="power" class="w-4 h-4"></i>
+                            <span>Nonaktifkan Fitur Lembur</span>
+                        </button>
+                    @else
+                        <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                            <span>Aktifkan Fitur Lembur</span>
+                        </button>
+                    @endif
+                </form>
+            </div>
+        </div>
+    @endif
+
     <!-- Stat Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         @if($user->isKadiv())

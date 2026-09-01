@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cuti;
 use App\Models\Divisi;
 use App\Models\Pegawai;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -80,5 +81,21 @@ class DashboardController extends Controller
         }
 
         return view('dashboard.index', compact('cutis', 'stats', 'user', 'currentYear'));
+    }
+
+    /**
+     * Switch / Toggle Fitur Simpanan Jam Lembur (Khusus HRD)
+     */
+    public function toggleLembur()
+    {
+        if (!Auth::user()->isHrd()) {
+            abort(403, 'Hanya HRD yang berhak mengubah pengaturan fitur sistem.');
+        }
+
+        $current = Setting::isLemburEnabled();
+        Setting::set('feature_lembur', !$current);
+        $statusText = !$current ? 'DIAKTIFKAN' : 'DINONAKTIFKAN';
+
+        return back()->with('success', "Fitur Simpanan Jam Lembur & Cuti Kompensasi berhasil {$statusText}!");
     }
 }

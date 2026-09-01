@@ -60,11 +60,13 @@
                         <span>Pengajuan Cuti</span>
                     </a>
 
-                    <a href="{{ route('public.pengajuan_lembur') }}" 
-                       class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('public.pengajuan_lembur*') ? 'bg-amber-500/30 text-amber-200 shadow-inner border border-amber-400/40 font-bold' : 'text-amber-200 hover:bg-white/10 hover:text-white' }}">
-                        <i data-lucide="clock" class="w-4 h-4 text-amber-300"></i>
-                        <span>Klaim Lembur</span>
-                    </a>
+                    @if($isLemburEnabled ?? false)
+                        <a href="{{ route('public.pengajuan_lembur') }}" 
+                           class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('public.pengajuan_lembur*') ? 'bg-amber-500/30 text-amber-200 shadow-inner border border-amber-400/40 font-bold' : 'text-amber-200 hover:bg-white/10 hover:text-white' }}">
+                            <i data-lucide="clock" class="w-4 h-4 text-amber-300"></i>
+                            <span>Klaim Lembur</span>
+                        </a>
+                    @endif
 
                     <a href="{{ route('public.tracking') }}" 
                        class="px-3 py-2 rounded-xl font-semibold transition-all flex items-center justify-center md:justify-start gap-1.5 {{ request()->routeIs('public.tracking') ? 'bg-white/20 text-white shadow-inner border border-white/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
@@ -122,7 +124,7 @@
                 <img src="{{ asset('images/logo.png') }}" class="h-5 w-auto" alt="Logo">
                 <p class="font-medium text-slate-300"><strong class="text-white">REHAT-PW</strong> &bull; STIKes Panti Waluya Malang &copy; {{ date('Y') }}</p>
             </div>
-            <p class="text-xs text-slate-500">Sistem Informasi Pengajuan Cuti &amp; Simpanan Jam Lembur</p>
+            <p class="text-xs text-slate-500">Sistem Informasi Pengajuan Cuti Multi-Level Approval</p>
         </div>
     </footer>
 

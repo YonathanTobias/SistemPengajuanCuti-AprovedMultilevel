@@ -30,6 +30,9 @@ Route::middleware('auth')->group(function () {
     // Dashboard (Current Year Only)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Switch/Toggle Fitur Lembur (Khusus HRD)
+    Route::post('/settings/toggle-lembur', [DashboardController::class, 'toggleLembur'])->name('settings.toggle-lembur');
+
     // Dedicated Annual Archive Module (Per Tahun)
     Route::get('/arsip', [ArsipController::class, 'index'])->name('arsip.index');
 
