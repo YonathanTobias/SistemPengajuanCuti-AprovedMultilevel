@@ -143,7 +143,12 @@
                             </td>
                             <td class="p-4">
                                 <span class="font-bold text-slate-900 block">{{ $item->jenis_cuti }}</span>
-                                <span class="text-[11px] text-slate-500 font-medium">Tanggal: {{ $item->tanggal_mulai->format('d/m/Y') }}</span>
+                                <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
+                                    <span class="text-[11px] text-slate-500 font-medium">Tanggal: {{ $item->tanggal_mulai->format('d/m/Y') }}</span>
+                                    @if($item->tahun_cuti && $item->tahun_cuti != $item->tanggal_mulai->format('Y'))
+                                        <span class="text-[10px] text-amber-800 font-bold bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300" title="Kelonggaran cuti periode {{ $item->tahun_cuti }}">Kelonggaran {{ $item->tahun_cuti }}</span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="p-4">
                                 <span class="px-2 py-1 bg-slate-100 text-slate-800 font-bold rounded border border-slate-200">

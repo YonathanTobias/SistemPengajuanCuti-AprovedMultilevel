@@ -45,6 +45,41 @@ class SistemCutiTest extends TestCase
         ]);
     }
 
+    public function test_kelonggaran_early_january_counts_toward_previous_year()
+    {
+        $divisi = Divisi::create(['kode_divisi' => 'DIV-01', 'nama_divisi' => 'Keperawatan']);
+        $pegawai = Pegawai::create([
+            'nip' => '07/A/AKP',
+            'nama' => 'Ns. Elizabeth Yun-Yun Vinsur, M.Kep',
+            'divisi_id' => $divisi->id,
+            'jabatan' => 'Dosen',
+            'email' => 'elizabeth@stikes.ac.id',
+            'no_hp' => '08123456789',
+            'jatah_cuti' => 12,
+            'sisa_cuti' => 0,
+            'saldo_lembur' => 0,
+        ]);
+
+        // Cuti pada 2 Januari 2026 dengan tahun_cuti 2025 (kelonggaran cuti 2025)
+        $cuti = Cuti::create([
+            'kode_tracking' => 'CUTI-20260102-0046',
+            'pegawai_id' => $pegawai->id,
+            'jenis_cuti' => 'Cuti Tahunan',
+            'tanggal_mulai' => '2026-01-02',
+            'tanggal_selesai' => '2026-01-02',
+            'tahun_cuti' => 2025,
+            'jumlah_hari' => 1,
+            'alasan' => 'Cuti Tahunan Kelonggaran',
+            'alamat_cuti' => 'Malang',
+            'no_hp_cuti' => '08123456789',
+            'status' => 'approved',
+        ]);
+
+        // Harus masuk query forYear(2025)
+        $this->assertTrue(Cuti::forYear(2025)->where('id', $cuti->id)->exists());
+        $this->assertFalse(Cuti::forYear(2026)->where('id', $cuti->id)->exists());
+    }
+
     public function test_feature_switch_can_disable_and_enable_overtime_module()
     {
         // 1. Matikan fitur lembur

@@ -140,12 +140,19 @@ class DatabaseSeeder extends Seeder
             // 3. Create Cuti Record (1 Day per Submission)
             $kodeTracking = 'CUTI-' . date('Ymd', strtotime($tglFormatted)) . '-' . sprintf('%04d', $no);
 
+            // Kelonggaran cuti tanggal 2 Januari 2026 masuk ke periode cuti 2025
+            $tahunCuti = (int) date('Y', strtotime($tglFormatted));
+            if ($tglFormatted === '2026-01-02' || (str_starts_with($tglFormatted, '2026-01-') && (int)date('d', strtotime($tglFormatted)) <= 5)) {
+                $tahunCuti = 2025;
+            }
+
             Cuti::create([
                 'kode_tracking' => $kodeTracking,
                 'pegawai_id' => $pegawai->id,
                 'jenis_cuti' => 'Cuti Tahunan',
                 'tanggal_mulai' => $tglFormatted,
                 'tanggal_selesai' => $tglFormatted,
+                'tahun_cuti' => $tahunCuti,
                 'jumlah_hari' => 1,
                 'alasan' => 'Pengajuan Cuti Tahunan Pegawai',
                 'alamat_cuti' => 'Malang',

@@ -253,8 +253,13 @@
                             <!-- Jenis & Durasi -->
                             <td class="p-4">
                                 <span class="font-bold text-slate-900 block">{{ $item->jenis_cuti }}</span>
-                                <span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded inline-block mt-1">{{ $item->jumlah_hari }} Hari</span>
-                                <div class="text-[11px] text-slate-500 mt-0.5">{{ $item->tanggal_mulai->format('d/m/Y') }} - {{ $item->tanggal_selesai->format('d/m/Y') }}</div>
+                                <span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded inline-block mt-1">{{ $item->durasi_formatted ?? ($item->jumlah_hari . ' Hari') }}</span>
+                                <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                                    <span>{{ $item->tanggal_mulai->format('d/m/Y') }}</span>
+                                    @if($item->tahun_cuti && $item->tahun_cuti != $item->tanggal_mulai->format('Y'))
+                                        <span class="text-[10px] text-amber-800 font-bold bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300" title="Kelonggaran cuti periode {{ $item->tahun_cuti }}">Kelonggaran {{ $item->tahun_cuti }}</span>
+                                    @endif
+                                </div>
                             </td>
 
                             <!-- Alasan -->

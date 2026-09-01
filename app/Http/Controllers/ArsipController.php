@@ -15,9 +15,8 @@ class ArsipController extends Controller
     {
         $user = Auth::user();
 
-        // Get all available years from DB cutis table
-        $availableYears = Cuti::selectRaw('strftime("%Y", tanggal_mulai) as year')
-            ->distinct()
+        // Get all available years from DB cutis table (considering tahun_cuti and tanggal_mulai)
+        $availableYears = Cuti::selectRaw('DISTINCT COALESCE(tahun_cuti, CAST(strftime("%Y", tanggal_mulai) AS INTEGER)) as year')
             ->orderBy('year', 'desc')
             ->pluck('year')
             ->toArray();
@@ -26,11 +25,11 @@ class ArsipController extends Controller
             $availableYears = [date('Y')];
         }
 
-        // Selected year (default to first available year or previous year if current is empty)
+        // Selected year (default to first available year)
         $selectedYear = $request->input('tahun', $availableYears[0]);
 
         $query = Cuti::with(['pegawai.divisi'])
-            ->whereYear('tanggal_mulai', $selectedYear)
+            ->forYear($selectedYear)
             ->orderBy('tanggal_mulai', 'desc');
 
         // Role-based scoping for Kadiv
@@ -58,25 +57,33 @@ class ArsipController extends Controller
             $query->whereHas('pegawai', function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
                   ->orWhere('nip', 'like', "%{$search}%");
-            })->orWhere('kode_tracking', 'like', "%{$search}%");
+            });
         }
 
         $cutis = $query->paginate(15)->withQueryString();
-        $divisis = Divisi::orderBy('nama_divisi', 'asc')->get();
 
-        // Archived Year Statistics
-        $statsQuery = Cuti::whereYear('tanggal_mulai', $selectedYear);
+        // Statistics for Selected Year
+        $statQuery = Cuti::forYear($selectedYear);
         if ($user->isKadiv() && $user->divisi_id) {
-            $statsQuery->whereHas('pegawai', fn($q) => $q->where('divisi_id', $user->divisi_id));
+            $statQuery->whereHas('pegawai', fn($q) => $q->where('divisi_id', $user->divisi_id));
         }
 
-        $stats = [
-            'total' => (clone $statsQuery)->count(),
-            'approved' => (clone $statsQuery)->where('status', 'approved')->count(),
-            'rejected' => (clone $statsQuery)->where('status', 'rejected')->count(),
-            'pending' => (clone $statsQuery)->where('status', 'like', 'pending%')->count(),
-        ];
+        $totalPengajuan = (clone $statQuery)->count();
+        $totalApproved = (clone $statQuery)->where('status', 'approved')->count();
+        $totalRejected = (clone $statQuery)->where('status', 'rejected')->count();
+        $totalHariCuti = (clone $statQuery)->where('status', 'approved')->sum('jumlah_hari');
 
-        return view('arsip.index', compact('cutis', 'availableYears', 'selectedYear', 'divisis', 'stats', 'user'));
+        $divisis = Divisi::orderBy('nama_divisi', 'asc')->get();
+
+        return view('arsip.index', compact(
+            'cutis',
+            'availableYears',
+            'selectedYear',
+            'totalPengajuan',
+            'totalApproved',
+            'totalRejected',
+            'totalHariCuti',
+            'divisis'
+        ));
     }
 }
