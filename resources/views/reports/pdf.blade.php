@@ -37,7 +37,8 @@
         <div class="border-b-4 border-double border-slate-900 pb-4 mb-6 flex items-center gap-6">
             <img src="{{ asset('images/logo.png') }}" alt="Logo STIKes" class="h-20 w-auto object-contain shrink-0">
             <div class="text-center flex-grow">
-                <div class="text-2xl font-black uppercase tracking-wider text-blue-950">SEKOLAH TINGGI ILMU KESEHATAN (STIKes) PANTI WALUYA</div>
+                <div class="text-lg sm:text-xl font-black uppercase tracking-wider text-blue-950 leading-tight">SEKOLAH TINGGI ILMU KESEHATAN (STIKes)</div>
+                <div class="text-xl sm:text-2xl font-black uppercase tracking-wider text-blue-950 leading-tight mt-1">PANTI WALUYA MALANG</div>
                 <div class="text-xs italic text-slate-700 mt-1">Jl. Yulius Usman No. 62, Malang, Jawa Timur | Telp: (0341) 369003</div>
                 <div class="text-xs text-slate-600">Website: www.stikespantiwaluya.ac.id | Email: stikes.pantiwaluyamlg@gmail.com</div>
             </div>

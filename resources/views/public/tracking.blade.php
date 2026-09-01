@@ -176,7 +176,6 @@
                             <div class="flex justify-between"><span class="text-slate-500">Nama Pegawai:</span> <span class="font-semibold text-slate-900">{{ $cuti->pegawai->nama }}</span></div>
                             <div class="flex justify-between"><span class="text-slate-500">NIP:</span> <span class="font-mono font-semibold text-slate-900">{{ $cuti->pegawai->nip }}</span></div>
                             <div class="flex justify-between"><span class="text-slate-500">Divisi / Prodi:</span> <span class="font-semibold text-slate-900">{{ $cuti->pegawai->divisi->nama_divisi ?? '-' }}</span></div>
-                            <div class="flex justify-between"><span class="text-slate-500">Jabatan:</span> <span class="font-semibold text-slate-900">{{ $cuti->pegawai->jabatan }}</span></div>
                         </div>
                     </div>
 

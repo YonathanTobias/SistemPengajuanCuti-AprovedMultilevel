@@ -64,7 +64,7 @@
 
                         <!-- Info Card Preview -->
                         <div id="pegawai-detail-card" class="hidden md:col-span-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
-                            <div class="grid grid-cols-2 {{ ($isLemburEnabled ?? false) ? 'sm:grid-cols-5' : 'sm:grid-cols-4' }} gap-3 text-xs">
+                            <div class="grid grid-cols-2 {{ ($isLemburEnabled ?? false) ? 'sm:grid-cols-4' : 'sm:grid-cols-3' }} gap-3 text-xs">
                                 <div>
                                     <span class="text-slate-500 block font-medium text-[11px]">NIP</span>
                                     <span id="preview-nip" class="font-bold text-slate-900 text-xs sm:text-sm font-mono"></span>
@@ -72,10 +72,6 @@
                                 <div>
                                     <span class="text-slate-500 block font-medium text-[11px]">Divisi / Prodi</span>
                                     <span id="preview-divisi" class="font-bold text-slate-900 text-xs sm:text-sm"></span>
-                                </div>
-                                <div>
-                                    <span class="text-slate-500 block font-medium text-[11px]">Jabatan</span>
-                                    <span id="preview-jabatan" class="font-bold text-slate-900 text-xs sm:text-sm"></span>
                                 </div>
                                 <div>
                                     <span class="text-slate-500 block font-medium text-[11px]">Sisa Cuti Tahunan</span>

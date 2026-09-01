@@ -122,7 +122,7 @@ class ReportController extends Controller
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
             fputcsv($file, [
-                'No', 'Kode Tracking', 'NIP', 'Nama Pegawai', 'Divisi / Prodi', 'Jabatan',
+                'No', 'Kode Tracking', 'NIP', 'Nama Pegawai', 'Divisi / Prodi',
                 'Jenis Cuti', 'Tanggal Cuti', 'Jumlah Hari', 'Status Cuti', 'Alasan Cuti',
                 'Alamat Cuti', 'No HP Cuti', 'Tgl Disetujui Kadiv', 'Tgl Disetujui HRD', 'Tgl Disetujui Ketua'
             ]);
@@ -143,7 +143,6 @@ class ReportController extends Controller
                     $c->pegawai->nip ?? '-',
                     $c->pegawai->nama ?? '-',
                     $c->pegawai->divisi->nama_divisi ?? '-',
-                    $c->pegawai->jabatan ?? '-',
                     $c->jenis_cuti,
                     $c->tanggal_mulai ? $c->tanggal_mulai->format('d/m/Y') : '-',
                     $c->jumlah_hari,
@@ -201,19 +200,19 @@ class ReportController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Laporan Cuti');
 
-        $sheet->mergeCells('A1:Q1');
+        $sheet->mergeCells('A1:P1');
         $yearTitle = $request->filled('tahun') ? " TAHUN {$request->tahun}" : "";
         $sheet->setCellValue('A1', 'REKAPITULASI DATA CUTI PEGAWAI' . $yearTitle . ' - STIKES PANTI WALUYA MALANG');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $sheet->mergeCells('A2:Q2');
+        $sheet->mergeCells('A2:P2');
         $sheet->setCellValue('A2', 'Tanggal Cetak: ' . date('d F Y H:i') . ' WIB');
         $sheet->getStyle('A2')->getFont()->setItalic(true)->setSize(10);
         $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $headers = [
-            'No', 'Kode Tracking', 'NIP', 'Nama Pegawai', 'Divisi / Prodi', 'Jabatan',
+            'No', 'Kode Tracking', 'NIP', 'Nama Pegawai', 'Divisi / Prodi',
             'Jenis Cuti', 'Tgl Cuti', 'Tgl Selesai', 'Durasi (Hari)', 'Status Cuti',
             'Alasan Cuti', 'Alamat Cuti', 'No. HP', 'Disetujui Kadiv', 'Disetujui HRD', 'Disetujui Ketua'
         ];
@@ -224,7 +223,7 @@ class ReportController extends Controller
             $sheet->setCellValue("{$colLetter}{$headerRow}", $headerText);
         }
 
-        $sheet->getStyle("A{$headerRow}:Q{$headerRow}")->applyFromArray([
+        $sheet->getStyle("A{$headerRow}:P{$headerRow}")->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '1E3A8A']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
@@ -246,21 +245,20 @@ class ReportController extends Controller
             $sheet->setCellValue("C{$rowNum}", $c->pegawai->nip ?? '-');
             $sheet->setCellValue("D{$rowNum}", $c->pegawai->nama ?? '-');
             $sheet->setCellValue("E{$rowNum}", $c->pegawai->divisi->nama_divisi ?? '-');
-            $sheet->setCellValue("F{$rowNum}", $c->pegawai->jabatan ?? '-');
-            $sheet->setCellValue("G{$rowNum}", $c->jenis_cuti);
-            $sheet->setCellValue("H{$rowNum}", $c->tanggal_mulai ? $c->tanggal_mulai->format('d/m/Y') : '-');
-            $sheet->setCellValue("I{$rowNum}", $c->tanggal_selesai ? $c->tanggal_selesai->format('d/m/Y') : '-');
-            $sheet->setCellValue("J{$rowNum}", $c->jumlah_hari);
-            $sheet->setCellValue("K{$rowNum}", $statusLabel);
-            $sheet->setCellValue("L{$rowNum}", $c->alasan);
-            $sheet->setCellValue("M{$rowNum}", $c->alamat_cuti);
-            $sheet->setCellValue("N{$rowNum}", $c->no_hp_cuti);
-            $sheet->setCellValue("O{$rowNum}", $c->kadiv_approved_at ? $c->kadiv_approved_at->format('d/m/Y H:i') : '-');
-            $sheet->setCellValue("P{$rowNum}", $c->hrd_approved_at ? $c->hrd_approved_at->format('d/m/Y H:i') : '-');
-            $sheet->setCellValue("Q{$rowNum}", $c->ketua_approved_at ? $c->ketua_approved_at->format('d/m/Y H:i') : '-');
+            $sheet->setCellValue("F{$rowNum}", $c->jenis_cuti);
+            $sheet->setCellValue("G{$rowNum}", $c->tanggal_mulai ? $c->tanggal_mulai->format('d/m/Y') : '-');
+            $sheet->setCellValue("H{$rowNum}", $c->tanggal_selesai ? $c->tanggal_selesai->format('d/m/Y') : '-');
+            $sheet->setCellValue("I{$rowNum}", $c->jumlah_hari);
+            $sheet->setCellValue("J{$rowNum}", $statusLabel);
+            $sheet->setCellValue("K{$rowNum}", $c->alasan);
+            $sheet->setCellValue("L{$rowNum}", $c->alamat_cuti);
+            $sheet->setCellValue("M{$rowNum}", $c->no_hp_cuti);
+            $sheet->setCellValue("N{$rowNum}", $c->kadiv_approved_at ? $c->kadiv_approved_at->format('d/m/Y H:i') : '-');
+            $sheet->setCellValue("O{$rowNum}", $c->hrd_approved_at ? $c->hrd_approved_at->format('d/m/Y H:i') : '-');
+            $sheet->setCellValue("P{$rowNum}", $c->ketua_approved_at ? $c->ketua_approved_at->format('d/m/Y H:i') : '-');
 
             if ($rowNum % 2 == 0) {
-                $sheet->getStyle("A{$rowNum}:Q{$rowNum}")->getFill()
+                $sheet->getStyle("A{$rowNum}:P{$rowNum}")->getFill()
                     ->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('F8FAFC');
             }
 
@@ -268,10 +266,10 @@ class ReportController extends Controller
         }
 
         $lastRow = $rowNum - 1;
-        $sheet->getStyle("A4:Q{$lastRow}")->getBorders()->getAllBorders()
+        $sheet->getStyle("A4:P{$lastRow}")->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('CBD5E1');
 
-        foreach (range(1, 17) as $colIndex) {
+        foreach (range(1, 16) as $colIndex) {
             $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex);
             $sheet->getColumnDimension($colLetter)->setAutoSize(true);
         }
@@ -345,7 +343,6 @@ class ReportController extends Controller
             fputcsv($file, ['Nama Pegawai', $pegawai->nama]);
             fputcsv($file, ['NIP', $pegawai->nip]);
             fputcsv($file, ['Divisi / Prodi', $pegawai->divisi->nama_divisi ?? '-']);
-            fputcsv($file, ['Jabatan', $pegawai->jabatan]);
             fputcsv($file, ['Jatah Cuti Tahunan', $pegawai->jatah_cuti . ' Hari']);
             fputcsv($file, ['Sisa Cuti Saat Ini', $pegawai->sisa_cuti . ' Hari']);
             fputcsv($file, []);
