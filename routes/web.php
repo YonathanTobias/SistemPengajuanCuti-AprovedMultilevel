@@ -23,7 +23,7 @@ Route::get('/surat-cuti/{kode_tracking}', [PublicCutiController::class, 'suratCu
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Authenticated Routes (Requires Login: Kadiv, HRD, Ketua STIKes)
 Route::middleware('auth')->group(function () {
