@@ -161,11 +161,6 @@
                                     <option value="Izin Pulang Cepat" {{ old('jenis_cuti') == 'Izin Pulang Cepat' ? 'selected' : '' }}>Izin Pulang Cepat (Potong Saldo Lembur, Maks. 3 Jam)</option>
                                     <option value="Izin Datang Terlambat" {{ old('jenis_cuti') == 'Izin Datang Terlambat' ? 'selected' : '' }}>Izin Datang Terlambat (Potong Saldo Lembur, Maks. 3 Jam)</option>
                                 @endif
-
-                                <option value="Cuti Sakit" {{ old('jenis_cuti') == 'Cuti Sakit' ? 'selected' : '' }}>Cuti Sakit (1 Hari)</option>
-                                <option value="Cuti Melahirkan" {{ old('jenis_cuti') == 'Cuti Melahirkan' ? 'selected' : '' }}>Cuti Melahirkan (1 Hari)</option>
-                                <option value="Cuti Alasan Penting" {{ old('jenis_cuti') == 'Cuti Alasan Penting' ? 'selected' : '' }}>Cuti Alasan Penting (1 Hari)</option>
-                                <option value="Cuti Besar" {{ old('jenis_cuti') == 'Cuti Besar' ? 'selected' : '' }}>Cuti Besar (1 Hari)</option>
                             </select>
                         </div>
 
