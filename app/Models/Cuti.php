@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Cuti extends Model
 {
@@ -86,5 +87,24 @@ class Cuti extends Model
                       ->whereYear('tanggal_mulai', $year);
               });
         });
+    }
+
+    /**
+     * Dapatkan daftar tahun cuti yang tersedia di database (Database Agnostic: SQLite & MySQL)
+     */
+    public static function getAvailableYears(): array
+    {
+        $driver = DB::getDriverName();
+        $expr = ($driver === 'sqlite')
+            ? 'DISTINCT COALESCE(tahun_cuti, CAST(strftime("%Y", tanggal_mulai) AS INTEGER)) as year'
+            : 'DISTINCT COALESCE(tahun_cuti, YEAR(tanggal_mulai)) as year';
+
+        $years = self::selectRaw($expr)
+            ->whereNotNull('tanggal_mulai')
+            ->orderBy('year', 'desc')
+            ->pluck('year')
+            ->toArray();
+
+        return !empty($years) ? $years : [(int) date('Y')];
     }
 }

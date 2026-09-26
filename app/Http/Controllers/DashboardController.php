@@ -16,15 +16,10 @@ class DashboardController extends Controller
         $user = Auth::user();
         
         // Current active year for Dashboard
-        $currentYear = date('Y');
-
-        // Check if there are cuti records for current calendar year, if none default to most recent year with data
-        if (!Cuti::forYear($currentYear)->exists()) {
-            $latestYear = Cuti::selectRaw('DISTINCT COALESCE(tahun_cuti, CAST(strftime("%Y", tanggal_mulai) AS INTEGER)) as year')
-                ->orderBy('year', 'desc')
-                ->value('year');
-            $currentYear = $latestYear ?: date('Y');
-        }
+        $availableYears = Cuti::getAvailableYears();
+        $currentYear = (in_array((int)date('Y'), $availableYears) && Cuti::forYear(date('Y'))->exists())
+            ? date('Y')
+            : $availableYears[0];
 
         $query = Cuti::with(['pegawai.divisi'])
             ->forYear($currentYear)

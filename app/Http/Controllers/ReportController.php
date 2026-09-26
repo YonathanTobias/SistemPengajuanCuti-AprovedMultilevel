@@ -22,21 +22,11 @@ class ReportController extends Controller
         }
     }
 
-    private function getAvailableYears()
-    {
-        $years = Cuti::selectRaw('DISTINCT COALESCE(tahun_cuti, CAST(strftime("%Y", tanggal_mulai) AS INTEGER)) as year')
-            ->orderBy('year', 'desc')
-            ->pluck('year')
-            ->toArray();
-
-        return !empty($years) ? $years : [date('Y')];
-    }
-
     public function index(Request $request)
     {
         $this->authorizeHrd();
 
-        $availableYears = $this->getAvailableYears();
+        $availableYears = Cuti::getAvailableYears();
         $selectedYear = $request->input('tahun', '');
 
         $query = Cuti::with(['pegawai.divisi'])->orderBy('created_at', 'desc');

@@ -7,7 +7,6 @@ use App\Models\Divisi;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class ArsipController extends Controller
 {
@@ -15,15 +14,8 @@ class ArsipController extends Controller
     {
         $user = Auth::user();
 
-        // Get all available years from DB cutis table (considering tahun_cuti and tanggal_mulai)
-        $availableYears = Cuti::selectRaw('DISTINCT COALESCE(tahun_cuti, CAST(strftime("%Y", tanggal_mulai) AS INTEGER)) as year')
-            ->orderBy('year', 'desc')
-            ->pluck('year')
-            ->toArray();
-
-        if (empty($availableYears)) {
-            $availableYears = [date('Y')];
-        }
+        // Get all available years from DB cutis table
+        $availableYears = Cuti::getAvailableYears();
 
         // Selected year (default to first available year)
         $selectedYear = $request->input('tahun', $availableYears[0]);
