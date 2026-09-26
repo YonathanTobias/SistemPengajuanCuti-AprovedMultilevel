@@ -3,31 +3,36 @@
 @section('title', "Arsip Cuti Pegawai - Tahun {$selectedYear}")
 
 @section('content')
-<div class="space-y-6">
-    <!-- Header Card -->
-    <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-        <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full border border-amber-500/40 text-xs font-bold mb-3">
-                <i data-lucide="archive" class="w-3.5 h-3.5"></i>
-                <span>Modul Arsip Tahunan</span>
+<div class="space-y-8 text-slate-900">
+    
+    <!-- Header Banner & Year Selector -->
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 p-6 sm:p-10 text-white shadow-2xl border border-slate-800/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="absolute -top-10 -right-10 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/15 text-amber-300 rounded-full border border-amber-500/30 text-[11px] font-bold uppercase tracking-wider mb-3 backdrop-blur-sm">
+                <i data-lucide="archive" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>Bank Data &amp; Arsip Tahunan</span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Arsip Cuti Pegawai Tahun {{ $selectedYear }}</h1>
-            <p class="text-xs sm:text-sm text-blue-200 mt-1 max-w-2xl">
-                Menampilkan seluruh riwayat pengajuan cuti pegawai yang telah diarsipkan untuk periode tahun <strong>{{ $selectedYear }}</strong>.
+            <h1 class="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
+                Arsip Cuti Pegawai Periode {{ $selectedYear }}
+            </h1>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                Menampilkan seluruh riwayat cuti pegawai yang telah tercatat dan diarsipkan untuk periode tahun <strong class="text-white">{{ $selectedYear }}</strong>.
             </p>
         </div>
 
         <!-- Year Selector Dropdown -->
-        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 shrink-0 w-full sm:w-auto">
-            <form action="{{ route('arsip.index') }}" method="GET" class="space-y-2">
+        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 shrink-0 w-full sm:w-auto relative z-10">
+            <form action="{{ route('arsip.index') }}" method="GET" class="space-y-1.5">
                 <label for="tahun" class="block text-[11px] font-bold text-blue-200 uppercase tracking-wider">
-                    Pilih Tahun Arsip:
+                    Pilih Periode Tahun Arsip:
                 </label>
                 <select name="tahun" id="tahun" onchange="this.form.submit()" 
-                        class="w-full sm:w-48 rounded-xl border-white/30 bg-slate-900 text-white text-sm font-bold p-2.5 focus:ring-amber-400 focus:border-amber-400">
+                        class="w-full sm:w-52 rounded-xl border-white/30 bg-slate-900 text-white text-xs sm:text-sm font-display font-bold p-3 focus:ring-4 focus:ring-amber-400/20 focus:border-amber-400 cursor-pointer">
                     @foreach($availableYears as $year)
                         <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
-                            📂 Tahun {{ $year }}
+                            📂 Periode Tahun {{ $year }}
                         </option>
                     @endforeach
                 </select>
@@ -36,41 +41,41 @@
     </div>
 
     <!-- Summary Stats for Selected Archived Year -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Pengajuan {{ $selectedYear }}</div>
-            <div class="text-2xl font-black text-slate-900 mt-1">{{ number_format($stats['total']) }} <span class="text-xs font-normal text-slate-500">Berkas</span></div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-5">
+        <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200/90 flex flex-col justify-between">
+            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Pengajuan {{ $selectedYear }}</div>
+            <div class="text-3xl font-black font-display text-slate-900 mt-2">{{ number_format($totalPengajuan) }} <span class="text-xs font-semibold text-slate-400">Berkas</span></div>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-            <div class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Disetujui (Approved)</div>
-            <div class="text-2xl font-black text-emerald-700 mt-1">{{ number_format($stats['approved']) }}</div>
+        <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200/90 flex flex-col justify-between">
+            <div class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Disetujui (Approved)</div>
+            <div class="text-3xl font-black font-display text-emerald-700 mt-2">{{ number_format($totalApproved) }}</div>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-            <div class="text-xs font-bold text-rose-600 uppercase tracking-wider">Ditolak (Rejected)</div>
-            <div class="text-2xl font-black text-rose-700 mt-1">{{ number_format($stats['rejected']) }}</div>
+        <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200/90 flex flex-col justify-between">
+            <div class="text-[11px] font-bold text-rose-600 uppercase tracking-wider">Ditolak (Rejected)</div>
+            <div class="text-3xl font-black font-display text-rose-700 mt-2">{{ number_format($totalRejected) }}</div>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-            <div class="text-xs font-bold text-amber-600 uppercase tracking-wider">Proses / Pending</div>
-            <div class="text-2xl font-black text-amber-700 mt-1">{{ number_format($stats['pending']) }}</div>
+        <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200/90 flex flex-col justify-between">
+            <div class="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Total Durasi Diambil</div>
+            <div class="text-3xl font-black font-display text-blue-700 mt-2">{{ number_format($totalHariCuti) }} <span class="text-xs font-semibold text-slate-400">Hari</span></div>
         </div>
     </div>
 
     <!-- Filter & Export Card -->
-    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200">
+    <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200/90">
         <form action="{{ route('arsip.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <input type="hidden" name="tahun" value="{{ $selectedYear }}">
 
             <div>
                 <input type="text" name="search" value="{{ request('search') }}" 
-                       placeholder="Cari Nama, NIP, Kode..." 
-                       class="w-full rounded-xl border-slate-300 p-2.5 bg-slate-50 text-slate-900 text-xs font-medium focus:ring-blue-500">
+                       placeholder="Cari Nama, NIP, Kode Tracking..." 
+                       class="w-full rounded-2xl border-slate-300 p-3 bg-slate-50 text-slate-900 text-xs font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600">
             </div>
 
             <div>
-                <select name="divisi_id" onchange="this.form.submit()" class="w-full rounded-xl border-slate-300 p-2.5 bg-slate-50 text-slate-900 text-xs font-medium focus:ring-blue-500">
+                <select name="divisi_id" onchange="this.form.submit()" class="w-full rounded-2xl border-slate-300 p-3 bg-slate-50 text-slate-900 text-xs font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 cursor-pointer">
                     <option value="">-- Semua Divisi / Prodi --</option>
                     @foreach($divisis as $div)
                         <option value="{{ $div->id }}" {{ request('divisi_id') == $div->id ? 'selected' : '' }}>
@@ -81,7 +86,7 @@
             </div>
 
             <div>
-                <select name="status" onchange="this.form.submit()" class="w-full rounded-xl border-slate-300 p-2.5 bg-slate-50 text-slate-900 text-xs font-medium focus:ring-blue-500">
+                <select name="status" onchange="this.form.submit()" class="w-full rounded-2xl border-slate-300 p-3 bg-slate-50 text-slate-900 text-xs font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 cursor-pointer">
                     <option value="">-- Semua Status --</option>
                     <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui (Approved)</option>
                     <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak (Rejected)</option>
@@ -92,19 +97,19 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <button type="submit" class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center gap-1.5">
-                    <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                <button type="submit" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white font-display font-bold rounded-2xl text-xs flex items-center gap-1.5 shadow transition-all">
+                    <i data-lucide="search" class="w-4 h-4"></i>
                     <span>Cari</span>
                 </button>
                 @if(request('search') || request('divisi_id') || request('status'))
-                    <a href="{{ route('arsip.index', ['tahun' => $selectedYear]) }}" class="px-4 py-2.5 bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold rounded-xl text-xs">
+                    <a href="{{ route('arsip.index', ['tahun' => $selectedYear]) }}" class="px-4 py-3 bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold rounded-2xl text-xs transition-colors">
                         Reset
                     </a>
                 @endif
 
                 @if(Auth::user()->isHrd())
                     <a href="{{ route('reports.export.xlsx', ['tgl_awal' => $selectedYear . '-01-01', 'tgl_akhir' => $selectedYear . '-12-31']) }}" 
-                       class="px-3 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center gap-1 ml-auto" title="Export Excel Tahun {{ $selectedYear }}">
+                       class="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-display font-bold rounded-2xl text-xs flex items-center gap-1.5 ml-auto shadow-lg shadow-emerald-600/20 transition-all" title="Export Excel Tahun {{ $selectedYear }}">
                         <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
                         <span>Excel</span>
                     </a>
@@ -114,11 +119,11 @@
     </div>
 
     <!-- Archive Table Card -->
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200 uppercase tracking-wider">
+                    <tr class="bg-slate-50 text-slate-600 font-display font-bold border-b border-slate-200 uppercase tracking-wider">
                         <th class="p-4">Kode Tracking</th>
                         <th class="p-4">Pegawai</th>
                         <th class="p-4">Divisi / Prodi</th>
@@ -130,29 +135,29 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 font-medium">
                     @forelse($cutis as $item)
-                        <tr class="hover:bg-slate-50 transition-colors">
+                        <tr class="hover:bg-slate-50/80 transition-colors">
                             <td class="p-4">
-                                <span class="font-mono font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">{{ $item->kode_tracking }}</span>
+                                <span class="font-mono font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">{{ $item->kode_tracking }}</span>
                             </td>
                             <td class="p-4">
-                                <span class="font-bold text-slate-900 text-sm block">{{ $item->pegawai->nama }}</span>
+                                <span class="font-display font-bold text-slate-900 text-sm block">{{ $item->pegawai->nama }}</span>
                                 <span class="text-[11px] text-slate-500 font-mono">NIP: {{ $item->pegawai->nip }}</span>
                             </td>
                             <td class="p-4">
-                                <span class="font-semibold text-blue-900 bg-blue-50 px-2.5 py-1 rounded border border-blue-200">{{ $item->pegawai->divisi->nama_divisi ?? '-' }}</span>
+                                <span class="font-semibold text-blue-900 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">{{ $item->pegawai->divisi->nama_divisi ?? '-' }}</span>
                             </td>
                             <td class="p-4">
                                 <span class="font-bold text-slate-900 block">{{ $item->jenis_cuti }}</span>
-                                <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
+                                <div class="flex items-center gap-1.5 flex-wrap mt-1">
                                     <span class="text-[11px] text-slate-500 font-medium">Tanggal: {{ $item->tanggal_mulai->format('d/m/Y') }}</span>
                                     @if($item->tahun_cuti && $item->tahun_cuti != $item->tanggal_mulai->format('Y'))
-                                        <span class="text-[10px] text-amber-800 font-bold bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300" title="Kelonggaran cuti periode {{ $item->tahun_cuti }}">Kelonggaran {{ $item->tahun_cuti }}</span>
+                                        <span class="text-[10px] text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded-md border border-amber-300" title="Kelonggaran cuti periode {{ $item->tahun_cuti }}">Kelonggaran {{ $item->tahun_cuti }}</span>
                                     @endif
                                 </div>
                             </td>
                             <td class="p-4">
-                                <span class="px-2 py-1 bg-slate-100 text-slate-800 font-bold rounded border border-slate-200">
-                                    {{ $item->jumlah_hari }} Hari
+                                <span class="px-2.5 py-1 bg-slate-100 text-slate-800 font-bold rounded-lg border border-slate-200">
+                                    {{ $item->durasi_formatted ?? ($item->jumlah_hari . ' Hari') }}
                                 </span>
                             </td>
                             <td class="p-4">
@@ -172,7 +177,7 @@
                             </td>
                             <td class="p-4 text-center">
                                 @if($item->status === 'approved')
-                                    <a href="{{ route('public.surat', $item->kode_tracking) }}" target="_blank" class="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg font-bold text-[11px] inline-flex items-center gap-1">
+                                    <a href="{{ route('public.surat', $item->kode_tracking) }}" target="_blank" class="px-3.5 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-xl font-bold text-[11px] inline-flex items-center gap-1.5 shadow-sm transition-colors">
                                         <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
                                         <span>Cetak Surat</span>
                                     </a>
@@ -183,9 +188,9 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="p-8 text-center text-slate-500">
-                                <i data-lucide="archive" class="w-10 h-10 mx-auto text-slate-300 mb-2"></i>
-                                <p class="font-semibold">Belum Ada Data Arsip untuk Tahun {{ $selectedYear }}</p>
+                            <td colspan="7" class="p-10 text-center text-slate-500">
+                                <i data-lucide="archive" class="w-12 h-12 mx-auto text-slate-300 mb-2"></i>
+                                <p class="font-display font-bold text-sm text-slate-700">Belum Ada Data Arsip untuk Tahun {{ $selectedYear }}</p>
                             </td>
                         </tr>
                     @endforelse
@@ -193,7 +198,7 @@
             </table>
         </div>
 
-        <div class="p-4 border-t border-slate-200">
+        <div class="p-5 border-t border-slate-200">
             {{ $cutis->links() }}
         </div>
     </div>
