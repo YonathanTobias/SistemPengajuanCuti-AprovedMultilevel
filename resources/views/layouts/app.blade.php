@@ -114,25 +114,53 @@
                         <a href="{{ route('reports.index') }}" 
                            class="px-3.5 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center md:justify-start gap-2 {{ request()->routeIs('reports.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 font-bold border border-blue-500' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                             <i data-lucide="file-text" class="w-4 h-4"></i>
-                            <span>Laporan &amp; Rekap</span>
+                            <span>Laporan</span>
                         </a>
 
                         @if(Auth::user()->canManageMaster())
-                            <a href="{{ route('pegawai.index') }}" 
-                               class="px-3.5 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center md:justify-start gap-2 {{ request()->routeIs('pegawai.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 font-bold border border-blue-500' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
-                                <i data-lucide="users" class="w-4 h-4"></i>
-                                <span>Pegawai</span>
-                            </a>
-                            <a href="{{ route('divisi.index') }}" 
-                               class="px-3.5 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center md:justify-start gap-2 {{ request()->routeIs('divisi.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 font-bold border border-blue-500' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
-                                <i data-lucide="building-2" class="w-4 h-4"></i>
-                                <span>Divisi/Prodi</span>
-                            </a>
-                            <a href="{{ route('users.index') }}" 
-                               class="px-3.5 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center md:justify-start gap-2 {{ request()->routeIs('users.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 font-bold border border-blue-500' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
-                                <i data-lucide="user-cog" class="w-4 h-4"></i>
-                                <span>User Akun</span>
-                            </a>
+                            <!-- Dropdown: Kelola Data -->
+                            <div class="relative" id="masterDataDropdownContainer">
+                                <button type="button" onclick="toggleMasterDropdown()" 
+                                        class="w-full md:w-auto px-3.5 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center justify-between md:justify-start gap-2 {{ request()->routeIs(['pegawai.*', 'divisi.*', 'users.*']) ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 font-bold border border-blue-500' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="database" class="w-4 h-4 {{ request()->routeIs(['pegawai.*', 'divisi.*', 'users.*']) ? 'text-white' : 'text-blue-400' }}"></i>
+                                        <span>Kelola Data</span>
+                                    </div>
+                                    <i data-lucide="chevron-down" id="masterChevronIcon" class="w-3.5 h-3.5 transition-transform duration-200 {{ request()->routeIs(['pegawai.*', 'divisi.*', 'users.*']) ? 'text-white' : 'text-slate-400' }}"></i>
+                                </button>
+
+                                <!-- Dropdown Card -->
+                                <div id="masterDataDropdownMenu" class="hidden md:absolute md:right-0 md:mt-2 w-full md:w-56 bg-slate-900/95 border border-slate-700/90 rounded-2xl shadow-2xl p-2 z-50 backdrop-blur-2xl">
+                                    <div class="px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-800 mb-1 flex items-center gap-1.5">
+                                        <i data-lucide="layers" class="w-3 h-3 text-blue-400"></i>
+                                        <span>Master &amp; Pengguna</span>
+                                    </div>
+                                    
+                                    <a href="{{ route('pegawai.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors {{ request()->routeIs('pegawai.*') ? 'bg-blue-600 text-white font-bold' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
+                                        <i data-lucide="users" class="w-4 h-4 {{ request()->routeIs('pegawai.*') ? 'text-white' : 'text-blue-400' }}"></i>
+                                        <div>
+                                            <div class="leading-tight">Data Pegawai</div>
+                                            <div class="text-[10px] opacity-75 font-normal">Pegawai &amp; Kuota Cuti</div>
+                                        </div>
+                                    </a>
+
+                                    <a href="{{ route('divisi.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors mt-0.5 {{ request()->routeIs('divisi.*') ? 'bg-blue-600 text-white font-bold' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
+                                        <i data-lucide="building-2" class="w-4 h-4 {{ request()->routeIs('divisi.*') ? 'text-white' : 'text-teal-400' }}"></i>
+                                        <div>
+                                            <div class="leading-tight">Divisi / Prodi</div>
+                                            <div class="text-[10px] opacity-75 font-normal">Unit &amp; Kepala Bagian</div>
+                                        </div>
+                                    </a>
+
+                                    <a href="{{ route('users.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors mt-0.5 {{ request()->routeIs('users.*') ? 'bg-blue-600 text-white font-bold' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
+                                        <i data-lucide="user-cog" class="w-4 h-4 {{ request()->routeIs('users.*') ? 'text-white' : 'text-purple-400' }}"></i>
+                                        <div>
+                                            <div class="leading-tight">Akun Pengguna</div>
+                                            <div class="text-[10px] opacity-75 font-normal">Akses Login &amp; Role</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
                         @endif
                     </nav>
 
@@ -227,6 +255,30 @@
                 closeIcon.classList.add('hidden');
             }
         }
+
+        function toggleMasterDropdown() {
+            const dropdown = document.getElementById('masterDataDropdownMenu');
+            const chevron = document.getElementById('masterChevronIcon');
+            if (dropdown) {
+                const isHidden = dropdown.classList.contains('hidden');
+                dropdown.classList.toggle('hidden');
+                if (chevron) {
+                    chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('masterDataDropdownContainer');
+            const dropdown = document.getElementById('masterDataDropdownMenu');
+            const chevron = document.getElementById('masterChevronIcon');
+            if (container && dropdown && !container.contains(e.target)) {
+                dropdown.classList.add('hidden');
+                if (chevron) {
+                    chevron.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
     </script>
     @stack('scripts')
 </body>
