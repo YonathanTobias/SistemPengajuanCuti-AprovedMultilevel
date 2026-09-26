@@ -20,9 +20,10 @@ Route::post('/pengajuan-lembur', [LemburController::class, 'publicStore'])->name
 Route::get('/tracking', [PublicCutiController::class, 'tracking'])->name('public.tracking');
 Route::get('/surat-cuti/{kode_tracking}', [PublicCutiController::class, 'suratCuti'])->name('public.surat');
 
-// Authentication Routes
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+// Authentication Routes (Custom Login Slug: /sugar)
+Route::get('/sugar', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/sugar', [AuthController::class, 'login']);
+Route::get('/login', fn() => redirect()->route('login'));
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Authenticated Routes (Requires Login: Kadiv, HRD, Ketua STIKes)
