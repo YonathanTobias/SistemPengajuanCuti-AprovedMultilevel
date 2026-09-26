@@ -23,6 +23,14 @@ class DatabaseSeeder extends Seeder
             'deskripsi' => 'Bagian SDM & Kepegawaian STIKes Panti Waluya Malang',
         ]);
 
+        // Admin IT (Super Admin)
+        User::firstOrCreate(['email' => 'admin@stikespantiwaluya.ac.id'], [
+            'name' => 'Administrator IT (Super Admin)',
+            'password' => Hash::make('password123'),
+            'role' => 'admin',
+            'divisi_id' => null,
+        ]);
+
         User::firstOrCreate(['email' => 'hrd@stikespantiwaluya.ac.id'], [
             'name' => 'Tim HRD & Kepegawaian',
             'password' => Hash::make('password123'),

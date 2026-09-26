@@ -40,7 +40,8 @@
             <div>
                 <select name="role" onchange="this.form.submit()" class="w-full rounded-2xl border-slate-300 p-3 bg-slate-50 text-slate-900 text-xs font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 cursor-pointer">
                     <option value="">-- Semua Role Akses --</option>
-                    <option value="hrd" {{ request('role') == 'hrd' ? 'selected' : '' }}>Tim HRD &amp; Kepegawaian (Admin)</option>
+                    <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin IT (Super Admin)</option>
+                    <option value="hrd" {{ request('role') == 'hrd' ? 'selected' : '' }}>Tim HRD &amp; Kepegawaian (HRD)</option>
                     <option value="kadiv" {{ request('role') == 'kadiv' ? 'selected' : '' }}>Kepala Divisi / Kaprodi (Kadiv)</option>
                     <option value="ketua" {{ request('role') == 'ketua' ? 'selected' : '' }}>Ketua STIKes</option>
                 </select>
@@ -89,7 +90,11 @@
                                 {{ $user->email }}
                             </td>
                             <td class="p-4">
-                                @if($user->isHrd())
+                                @if($user->isAdmin())
+                                    <span class="px-3 py-1 bg-purple-100 text-purple-800 font-bold rounded-full text-[11px] border border-purple-200 inline-block">
+                                        Admin IT &bull; Super
+                                    </span>
+                                @elseif($user->isHrd())
                                     <span class="px-3 py-1 bg-indigo-100 text-indigo-800 font-bold rounded-full text-[11px] border border-indigo-200 inline-block">
                                         HRD &bull; Admin
                                     </span>

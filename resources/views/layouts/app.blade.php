@@ -117,7 +117,7 @@
                             <span>Laporan &amp; Rekap</span>
                         </a>
 
-                        @if(Auth::user()->isHrd())
+                        @if(Auth::user()->canManageMaster())
                             <a href="{{ route('pegawai.index') }}" 
                                class="px-3.5 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center md:justify-start gap-2 {{ request()->routeIs('pegawai.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 font-bold border border-blue-500' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                                 <i data-lucide="users" class="w-4 h-4"></i>
@@ -140,15 +140,17 @@
                     <div class="flex items-center justify-between md:justify-start gap-3 border-t md:border-t-0 md:border-l border-slate-800 pt-2 md:pt-0 md:pl-4">
                         <div class="text-left leading-tight">
                             <div class="font-display font-bold text-white text-xs sm:text-sm">{{ Auth::user()->name }}</div>
-                            <div class="text-[10px] text-teal-400 font-bold uppercase tracking-wider">
-                                @if(Auth::user()->isKadiv())
-                                    Kadiv {{ Auth::user()->divisi->nama_divisi ?? '' }}
+                            <div class="text-[10px] font-bold uppercase tracking-wider">
+                                @if(Auth::user()->isAdmin())
+                                    <span class="text-purple-400">Admin IT &bull; Super Admin</span>
+                                @elseif(Auth::user()->isKadiv())
+                                    <span class="text-teal-400">Kadiv {{ Auth::user()->divisi->nama_divisi ?? '' }}</span>
                                 @elseif(Auth::user()->isHrd())
-                                    HRD / Kepegawaian
+                                    <span class="text-teal-400">HRD / Kepegawaian</span>
                                 @elseif(Auth::user()->isKetua())
-                                    Ketua STIKes
+                                    <span class="text-amber-400">Ketua STIKes</span>
                                 @else
-                                    Administrator
+                                    <span class="text-slate-400">Administrator</span>
                                 @endif
                             </div>
                         </div>

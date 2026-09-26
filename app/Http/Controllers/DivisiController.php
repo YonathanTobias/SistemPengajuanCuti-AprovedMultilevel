@@ -11,29 +11,29 @@ use Illuminate\Support\Str;
 
 class DivisiController extends Controller
 {
-    private function authorizeHrd()
+    private function authorizeAdminOrHrd()
     {
-        if (!Auth::user() || !Auth::user()->isHrd()) {
-            abort(403, 'Akses Ditolak: Fitur Kelola Divisi hanya diperuntukkan bagi HRD.');
+        if (!Auth::user() || !Auth::user()->canManageMaster()) {
+            abort(403, 'Akses Ditolak: Fitur Kelola Divisi hanya diperuntukkan bagi Admin IT dan HRD.');
         }
     }
 
     public function index()
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
         $divisis = Divisi::with(['kadivUser', 'pegawais'])->orderBy('nama_divisi', 'asc')->get();
         return view('divisi.index', compact('divisis'));
     }
 
     public function create()
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
         return view('divisi.create');
     }
 
     public function store(Request $request)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         $request->validate([
             'kode_divisi' => 'required|string|max:20|unique:divisis,kode_divisi',
@@ -81,14 +81,14 @@ class DivisiController extends Controller
 
     public function edit(Divisi $divisi)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
         $divisi->load('kadivUser');
         return view('divisi.edit', compact('divisi'));
     }
 
     public function update(Request $request, Divisi $divisi)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         $request->validate([
             'kode_divisi' => 'required|string|max:20|unique:divisis,kode_divisi,' . $divisi->id,
@@ -114,7 +114,7 @@ class DivisiController extends Controller
 
     public function destroy(Divisi $divisi)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
         $nama = $divisi->nama_divisi;
         User::where('divisi_id', $divisi->id)->delete();
         $divisi->delete();

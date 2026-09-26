@@ -9,6 +9,8 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\User;
+
 class DashboardController extends Controller
 {
     public function index(Request $request)
@@ -42,7 +44,19 @@ class DashboardController extends Controller
         $cutis = $query->paginate(10)->withQueryString();
 
         // Statistics for Current Active Year
-        if ($user->isKadiv()) {
+        if ($user->isAdmin()) {
+            $stats = [
+                'total_users' => User::count(),
+                'total_pegawai' => Pegawai::count(),
+                'total_divisi' => Divisi::count(),
+                'total_cuti' => Cuti::forYear($currentYear)->count(),
+                'pending_kadiv' => Cuti::forYear($currentYear)->where('status', 'pending_kadiv')->count(),
+                'pending_hrd' => Cuti::forYear($currentYear)->where('status', 'pending_hrd')->count(),
+                'pending_ketua' => Cuti::forYear($currentYear)->where('status', 'pending_ketua')->count(),
+                'approved' => Cuti::forYear($currentYear)->where('status', 'approved')->count(),
+                'rejected' => Cuti::forYear($currentYear)->where('status', 'rejected')->count(),
+            ];
+        } elseif ($user->isKadiv()) {
             $divisiId = $user->divisi_id;
             $stats = [
                 'pending' => Cuti::forYear($currentYear)
@@ -79,12 +93,12 @@ class DashboardController extends Controller
     }
 
     /**
-     * Switch / Toggle Fitur Simpanan Jam Lembur (Khusus HRD)
+     * Switch / Toggle Fitur Simpanan Jam Lembur (Admin IT & HRD)
      */
     public function toggleLembur()
     {
-        if (!Auth::user()->isHrd()) {
-            abort(403, 'Hanya HRD yang berhak mengubah pengaturan fitur sistem.');
+        if (!Auth::user()->canManageMaster()) {
+            abort(403, 'Hanya Admin IT dan HRD yang berhak mengubah pengaturan fitur sistem.');
         }
 
         $current = Setting::isLemburEnabled();

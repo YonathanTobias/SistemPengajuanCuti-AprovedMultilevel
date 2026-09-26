@@ -246,4 +246,41 @@ class SistemCutiTest extends TestCase
             'role' => 'kadiv',
         ]);
     }
+
+    public function test_admin_it_has_full_administrative_access()
+    {
+        $admin = User::create([
+            'name' => 'Admin IT Super',
+            'email' => 'admin.super@stikes.ac.id',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+        ]);
+
+        $this->assertTrue($admin->isAdmin());
+        $this->assertTrue($admin->canManageMaster());
+
+        // Can access dashboard with admin stats
+        $response = $this->actingAs($admin)->get(route('dashboard'));
+        $response->assertOk();
+        $response->assertSee('Admin IT (Super Admin)');
+
+        // Can access User Management
+        $this->actingAs($admin)->get(route('users.index'))->assertOk();
+
+        // Can create a new admin user
+        $this->actingAs($admin)->post(route('users.store'), [
+            'name' => 'Staf IT Tambahan',
+            'email' => 'staf.it@stikes.ac.id',
+            'password' => 'password123',
+            'role' => 'admin',
+        ])->assertRedirect(route('users.index'));
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'staf.it@stikes.ac.id',
+            'role' => 'admin',
+        ]);
+
+        // Can toggle system features
+        $this->actingAs($admin)->post(route('settings.toggle-lembur'))->assertRedirect();
+    }
 }

@@ -54,6 +54,11 @@ class User extends Authenticatable
         return $this->belongsTo(Divisi::class);
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
     public function isHrd(): bool
     {
         return $this->role === 'hrd';
@@ -67,5 +72,10 @@ class User extends Authenticatable
     public function isKetua(): bool
     {
         return $this->role === 'ketua';
+    }
+
+    public function canManageMaster(): bool
+    {
+        return $this->isAdmin() || $this->isHrd();
     }
 }

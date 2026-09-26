@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    private function authorizeHrd()
+    private function authorizeAdminOrHrd()
     {
-        if (!Auth::user() || !Auth::user()->isHrd()) {
-            abort(403, 'Akses Ditolak: Fitur Kelola User hanya diperuntukkan bagi HRD.');
+        if (!Auth::user() || !Auth::user()->canManageMaster()) {
+            abort(403, 'Akses Ditolak: Fitur Kelola User hanya diperuntukkan bagi Admin IT dan HRD.');
         }
     }
 
     public function index(Request $request)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         $query = User::with('divisi')->orderBy('role', 'asc')->orderBy('name', 'asc');
 
@@ -42,20 +42,20 @@ class UserController extends Controller
 
     public function create()
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
         $divisis = Divisi::orderBy('nama_divisi', 'asc')->get();
         return view('users.create', compact('divisis'));
     }
 
     public function store(Request $request)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         $request->validate([
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:hrd,kadiv,ketua',
+            'role' => 'required|in:admin,hrd,kadiv,ketua',
             'divisi_id' => 'nullable|required_if:role,kadiv|exists:divisis,id',
         ], [
             'name.required' => 'Nama pengguna/posisi wajib diisi.',
@@ -80,19 +80,19 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
         $divisis = Divisi::orderBy('nama_divisi', 'asc')->get();
         return view('users.edit', compact('user', 'divisis'));
     }
 
     public function update(Request $request, User $user)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         $request->validate([
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'role' => 'required|in:hrd,kadiv,ketua',
+            'role' => 'required|in:admin,hrd,kadiv,ketua',
             'divisi_id' => 'nullable|required_if:role,kadiv|exists:divisis,id',
             'password' => 'nullable|string|min:6',
         ]);
@@ -116,7 +116,7 @@ class UserController extends Controller
 
     public function resetPassword(Request $request, User $user)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         $newPassword = $request->input('new_password', 'password123');
         $user->update([
@@ -129,7 +129,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         if ($user->id === Auth::id()) {
             return redirect()->route('users.index')

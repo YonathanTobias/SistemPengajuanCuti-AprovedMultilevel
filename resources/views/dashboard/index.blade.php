@@ -20,7 +20,9 @@
                     Selamat Datang, {{ $user->name }}
                 </h1>
                 <p class="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
-                    @if($user->isKadiv())
+                    @if($user->isAdmin())
+                        Dashboard Admin IT (Super Admin) &bull; Pengawasan Sistem, Master Data, dan Audit Institusi
+                    @elseif($user->isKadiv())
                         Dashboard Persetujuan Cuti Level 1 &bull; Kepala Divisi / Kaprodi {{ $user->divisi ? '(' . $user->divisi->nama_divisi . ')' : '' }}
                     @elseif($user->isHrd())
                         Dashboard Persetujuan Cuti Level 2 &amp; Manajemen Data Kepegawaian (HRD)
@@ -30,7 +32,7 @@
                 </p>
             </div>
             
-            @if($user->isHrd())
+            @if($user->canManageMaster())
                 <div class="flex flex-wrap items-center gap-2.5 shrink-0">
                     <a href="{{ route('pegawai.create') }}" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-display font-bold shadow-lg shadow-blue-600/30 transition-all flex items-center gap-1.5">
                         <i data-lucide="user-plus" class="w-4 h-4"></i>
@@ -40,12 +42,16 @@
                         <i data-lucide="building" class="w-4 h-4"></i>
                         <span>+ Tambah Divisi</span>
                     </a>
+                    <a href="{{ route('users.create') }}" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-display font-bold shadow-lg shadow-purple-600/30 transition-all flex items-center gap-1.5">
+                        <i data-lucide="user-cog" class="w-4 h-4"></i>
+                        <span>+ Akun User</span>
+                    </a>
                 </div>
             @endif
         </div>
     </div>
 
-    @if($user->isHrd())
+    @if($user->canManageMaster())
         <!-- Feature Switch: Simpanan Jam Lembur -->
         <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-5 text-slate-900">
             <div class="flex items-center gap-4">
@@ -96,7 +102,44 @@
 
     <!-- Stat Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 text-slate-900">
-        @if($user->isKadiv())
+        @if($user->isAdmin())
+            <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200/90 flex items-center gap-4 transition-transform hover:-translate-y-1 duration-200">
+                <div class="w-14 h-14 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                    <i data-lucide="shield-check" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <div class="text-3xl font-black font-display text-slate-900">{{ $stats['total_users'] }}</div>
+                    <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-0.5">Akun Pejabat/User</div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200/90 flex items-center gap-4 transition-transform hover:-translate-y-1 duration-200">
+                <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                    <i data-lucide="users" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <div class="text-3xl font-black font-display text-slate-900">{{ $stats['total_pegawai'] }}</div>
+                    <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-0.5">Total Pegawai</div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200/90 flex items-center gap-4 transition-transform hover:-translate-y-1 duration-200">
+                <div class="w-14 h-14 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center shrink-0">
+                    <i data-lucide="building-2" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <div class="text-3xl font-black font-display text-slate-900">{{ $stats['total_divisi'] }}</div>
+                    <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-0.5">Divisi / Prodi</div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200/90 flex items-center gap-4 transition-transform hover:-translate-y-1 duration-200">
+                <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                    <i data-lucide="file-text" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <div class="text-3xl font-black font-display text-slate-900">{{ $stats['total_cuti'] }}</div>
+                    <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-0.5">Permohonan ({{ $currentYear }})</div>
+                </div>
+            </div>
+        @elseif($user->isKadiv())
             <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200/90 flex items-center gap-4 transition-transform hover:-translate-y-1 duration-200">
                 <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
                     <i data-lucide="clock" class="w-7 h-7"></i>

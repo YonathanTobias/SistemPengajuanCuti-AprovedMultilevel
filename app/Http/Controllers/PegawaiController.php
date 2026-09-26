@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\Auth;
 
 class PegawaiController extends Controller
 {
-    private function authorizeHrd()
+    private function authorizeAdminOrHrd()
     {
-        if (!Auth::user() || !Auth::user()->isHrd()) {
-            abort(403, 'Akses Ditolak: Fitur Kelola Data Pegawai hanya diperuntukkan bagi HRD.');
+        if (!Auth::user() || !Auth::user()->canManageMaster()) {
+            abort(403, 'Akses Ditolak: Fitur Kelola Data Pegawai hanya diperuntukkan bagi Admin IT dan HRD.');
         }
     }
 
     public function index(Request $request)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         $query = Pegawai::with(['divisi'])->orderBy('nama', 'asc');
 
@@ -44,14 +44,14 @@ class PegawaiController extends Controller
 
     public function create()
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
         $divisis = Divisi::orderBy('nama_divisi', 'asc')->get();
         return view('pegawai.create', compact('divisis'));
     }
 
     public function store(Request $request)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         $request->validate([
             'nip' => 'required|string|max:30|unique:pegawais,nip',
@@ -85,14 +85,14 @@ class PegawaiController extends Controller
 
     public function edit(Pegawai $pegawai)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
         $divisis = Divisi::orderBy('nama_divisi', 'asc')->get();
         return view('pegawai.edit', compact('pegawai', 'divisis'));
     }
 
     public function update(Request $request, Pegawai $pegawai)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         $request->validate([
             'nip' => 'required|string|max:30|unique:pegawais,nip,' . $pegawai->id,
@@ -122,7 +122,7 @@ class PegawaiController extends Controller
 
     public function tambahCutiKhusus(Request $request, Pegawai $pegawai)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         $request->validate([
             'jumlah_tambahan' => 'required|integer|min:1|max:30',
@@ -140,7 +140,7 @@ class PegawaiController extends Controller
 
     public function resetKuotaManual(Request $request)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
 
         $newQuota = (int) $request->input('target_quota', 0);
         
@@ -154,7 +154,7 @@ class PegawaiController extends Controller
 
     public function destroy(Pegawai $pegawai)
     {
-        $this->authorizeHrd();
+        $this->authorizeAdminOrHrd();
         $nama = $pegawai->nama;
         $pegawai->delete();
 

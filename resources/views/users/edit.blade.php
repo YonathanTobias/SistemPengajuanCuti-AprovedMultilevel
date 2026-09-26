@@ -56,8 +56,9 @@
                 </label>
                 <select name="role" id="role" onchange="toggleDivisiSelection(this.value)" 
                         class="w-full rounded-xl border-slate-300 p-3 bg-slate-50 text-slate-900 text-sm font-bold focus:ring-blue-500" required>
+                    <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin IT (Super Administrator - Full System Access)</option>
+                    <option value="hrd" {{ old('role', $user->role) == 'hrd' ? 'selected' : '' }}>Tim HRD &amp; Kepegawaian (Level 2 Approval &amp; Manajemen Data)</option>
                     <option value="kadiv" {{ old('role', $user->role) == 'kadiv' ? 'selected' : '' }}>Kepala Divisi / Kaprodi (Level 1 Approval)</option>
-                    <option value="hrd" {{ old('role', $user->role) == 'hrd' ? 'selected' : '' }}>Tim HRD &amp; Kepegawaian (Level 2 Approval &amp; Full Admin)</option>
                     <option value="ketua" {{ old('role', $user->role) == 'ketua' ? 'selected' : '' }}>Ketua STIKes (Level 3 Final Approval)</option>
                 </select>
                 @error('role') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
